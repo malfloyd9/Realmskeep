@@ -241,3 +241,71 @@ footer p:last-child {
     .hero p { font-size: 1.1rem; }
     .section-title { font-size: 2rem; }
 }
+
+.testimonials-section {
+    padding: 5rem 0;
+    background: var(--black);
+    color: var(--white);
+    overflow: hidden;
+}
+
+.testimonials-section .section-title {
+    color: var(--white);
+    margin-bottom: 2rem;
+}
+
+.testimonials-section .section-title::after {
+    background: #f4c542;
+}
+
+.testimonials-track {
+    display: flex;
+    gap: 1.5rem;
+    width: max-content;
+    animation: marquee 26s linear infinite;
+    padding: 0 1rem;
+}
+
+.testimonial-card {
+    width: min(360px, 85vw);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 1.5rem;
+    backdrop-filter: blur(2px);
+}
+
+.testimonial-card .quote {
+    font-size: 1.05rem;
+    margin-bottom: 0.8rem;
+}
+
+.testimonial-card .author {
+    opacity: 0.85;
+    margin-bottom: 0.6rem;
+}
+
+.testimonial-card .role {
+    color: #f4c542;
+    letter-spacing: 4px;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+@keyframes marquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .testimonials-track {
+        animation: none;
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: center;
+    }
+}
