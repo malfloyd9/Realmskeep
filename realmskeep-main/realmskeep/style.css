@@ -91,33 +91,65 @@ header {
 
 .arcane-sparks {
     position: absolute;
-    inset: -8px;
+    inset: -16px;
     pointer-events: none;
     z-index: 3;
+    contain: layout paint;
 }
 
 .spark {
+    --bolt-length: 80px;
+    --bolt-thickness: 4px;
+    --bolt-angle: 0deg;
+    --impact-x: 0px;
+    --impact-y: 0px;
+    --spell-color-core: #3a2dff;
+    --spell-color-mid: #00a8ff;
+    --spell-color-glow: rgba(0, 168, 255, 0.45);
     position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 30% 30%, #fff6b6, #ffcf66 55%, rgba(255, 207, 102, 0));
+    top: 50%;
+    left: 50%;
+    width: var(--bolt-length);
+    height: var(--bolt-thickness);
+    border-radius: 999px;
+    transform-origin: left center;
+    transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(0.05);
     opacity: 0;
-    transform: translate3d(0, 0, 0) scale(0.3);
+    background: linear-gradient(90deg, #ffffff 0%, var(--spell-color-core) 28%, var(--spell-color-mid) 60%, rgba(255, 255, 255, 0) 100%);
+    box-shadow: 0 0 10px var(--spell-color-glow), 0 0 22px var(--spell-color-glow);
+    will-change: transform, opacity;
+}
+
+.spark::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    left: calc(100% - 4px);
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, #ffffff 0%, var(--spell-color-mid) 45%, rgba(255, 255, 255, 0) 75%);
+    box-shadow: 0 0 12px 2px var(--spell-color-glow);
+    opacity: 0;
 }
 
 .logo-animation-active .spark {
-    animation: arcaneSparkBurst 650ms ease-out forwards;
+    animation: arcaneSpellShot 900ms cubic-bezier(0.21, 0.66, 0.2, 1) forwards;
 }
 
-.logo-animation-active .spark:nth-child(1) { top: 12%; left: 14%; animation-delay: 0ms; }
-.logo-animation-active .spark:nth-child(2) { top: 22%; right: 10%; animation-delay: 45ms; }
-.logo-animation-active .spark:nth-child(3) { bottom: 28%; left: 8%; animation-delay: 80ms; }
-.logo-animation-active .spark:nth-child(4) { bottom: 12%; right: 16%; animation-delay: 100ms; }
-.logo-animation-active .spark:nth-child(5) { top: 42%; left: 50%; animation-delay: 130ms; }
-.logo-animation-active .spark:nth-child(6) { top: 4%; left: 45%; animation-delay: 170ms; }
-.logo-animation-active .spark:nth-child(7) { bottom: 8%; left: 40%; animation-delay: 210ms; }
-.logo-animation-active .spark:nth-child(8) { top: 58%; right: 28%; animation-delay: 240ms; }
+.logo-animation-active .spark::after {
+    animation: arcaneImpact 900ms ease-out forwards;
+}
+
+.logo-animation-active .spark:nth-child(1) { --bolt-angle: -150deg; --bolt-length: 74px; --spell-color-core: #4d4dff; --spell-color-mid: #00a8ff; --spell-color-glow: rgba(0, 168, 255, 0.6); animation-delay: 0ms; }
+.logo-animation-active .spark:nth-child(2) { --bolt-angle: -122deg; --bolt-length: 86px; --spell-color-core: #6a40ff; --spell-color-mid: #00dcff; --spell-color-glow: rgba(106, 64, 255, 0.55); animation-delay: 60ms; }
+.logo-animation-active .spark:nth-child(3) { --bolt-angle: -86deg; --bolt-length: 82px; --spell-color-core: #00a8ff; --spell-color-mid: #3affd8; --spell-color-glow: rgba(0, 168, 255, 0.55); animation-delay: 120ms; }
+.logo-animation-active .spark:nth-child(4) { --bolt-angle: -38deg; --bolt-length: 90px; --spell-color-core: #8a2dff; --spell-color-mid: #4dc6ff; --spell-color-glow: rgba(138, 45, 255, 0.55); animation-delay: 170ms; }
+.logo-animation-active .spark:nth-child(5) { --bolt-angle: 18deg; --bolt-length: 78px; --spell-color-core: #3554ff; --spell-color-mid: #00b2ff; --spell-color-glow: rgba(0, 178, 255, 0.55); animation-delay: 220ms; }
+.logo-animation-active .spark:nth-child(6) { --bolt-angle: 64deg; --bolt-length: 92px; --spell-color-core: #7436ff; --spell-color-mid: #00e8ff; --spell-color-glow: rgba(116, 54, 255, 0.6); animation-delay: 250ms; }
+.logo-animation-active .spark:nth-child(7) { --bolt-angle: 112deg; --bolt-length: 84px; --spell-color-core: #0088ff; --spell-color-mid: #20ffea; --spell-color-glow: rgba(0, 136, 255, 0.55); animation-delay: 290ms; }
+.logo-animation-active .spark:nth-child(8) { --bolt-angle: 152deg; --bolt-length: 76px; --spell-color-core: #5f39ff; --spell-color-mid: #24b8ff; --spell-color-glow: rgba(95, 57, 255, 0.6); animation-delay: 330ms; }
 
 .hero {
     text-align: center;
@@ -383,17 +415,40 @@ footer p:last-child {
     }
 }
 
-@keyframes arcaneSparkBurst {
+@keyframes arcaneSpellShot {
     0% {
         opacity: 0;
-        transform: translate3d(0, 0, 0) scale(0.3);
+        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(0.05);
+        filter: brightness(1);
     }
-    20% {
+    22% {
         opacity: 1;
+        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(1);
+        filter: brightness(1.35);
+    }
+    78% {
+        opacity: 0.95;
+        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(1);
     }
     100% {
         opacity: 0;
-        transform: translate3d(0, -24px, 0) scale(1.15);
+        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(1.12);
+        filter: brightness(1.05);
+    }
+}
+
+@keyframes arcaneImpact {
+    0%, 70% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.35);
+    }
+    82% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(1.55);
     }
 }
 
