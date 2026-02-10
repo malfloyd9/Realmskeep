@@ -31,7 +31,7 @@ Per-particle randomized values:
 - No external dependencies or heavy libraries; uses lightweight DOM + CSS keyframes.
 - Animation layer is absolutely positioned and `pointer-events: none`.
 - No layout shift: particles are rendered in a zero-size overlay anchored to logo center.
-- Script is loaded as a module at the end of `body` to avoid blocking LCP.
+- Script is loaded as a small ES module in the document head (modules are deferred by default) to keep integration merge-friendly while avoiding render-blocking behavior.
 
 ## Manual QA checklist
 - [ ] First page load triggers one sparkle burst.
