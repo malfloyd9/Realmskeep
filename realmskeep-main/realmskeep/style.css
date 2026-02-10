@@ -91,34 +91,35 @@ header {
 
 .arcane-sparks {
     position: absolute;
-    inset: -12px -34px -36px -34px;
+    inset: -10px -28px -24px -28px;
     pointer-events: none;
     z-index: 3;
     contain: layout paint;
 }
 
 .spark {
-    --arrow-length: 34px;
+    --arrow-length: 32px;
     --arrow-thickness: 2px;
-    --origin-x: 0px;
-    --origin-y: -6px;
-    --land-x: 42px;
-    --land-y: 18px;
-    --shot-angle: 8deg;
-    --land-angle: 58deg;
+    --origin-x: 6px;
+    --origin-y: -8px;
+    --arc-x: 20px;
+    --arc-y: -20px;
+    --land-x: 36px;
+    --land-y: 16px;
+    --flight-angle: 14deg;
+    --land-angle: 68deg;
     --arrow-delay: 0ms;
     position: absolute;
     top: 50%;
     left: 50%;
     width: var(--arrow-length);
     height: var(--arrow-thickness);
-    border-radius: 999px;
     opacity: 0;
-    transform-origin: 18% 50%;
-    transform: translate3d(var(--origin-x), var(--origin-y), 0) rotate(var(--shot-angle));
-    background: #111;
-    box-shadow: 0 0 0 1px #fff inset;
-    filter: drop-shadow(0 1px 0 rgba(255,255,255,0.55));
+    border-radius: 999px;
+    transform-origin: 16% 50%;
+    transform: translate3d(var(--origin-x), var(--origin-y), 0) rotate(var(--flight-angle));
+    background: repeating-linear-gradient(90deg, #111 0 4px, #2e2e2e 4px 5px, #111 5px 9px);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.8) inset;
     will-change: transform, opacity;
 }
 
@@ -130,8 +131,8 @@ header {
     width: 7px;
     height: 7px;
     transform: translateY(-50%);
-    background: #101010;
-    clip-path: polygon(0 8%, 100% 50%, 0 92%, 28% 50%);
+    background: #0f0f0f;
+    clip-path: polygon(0 12%, 100% 50%, 0 88%, 28% 50%);
 }
 
 .spark::after {
@@ -142,23 +143,24 @@ header {
     width: 10px;
     height: 8px;
     transform: translateY(-50%);
-    background: repeating-linear-gradient(90deg, #fefefe 0 1px, #8d8d8d 1px 2px);
-    clip-path: polygon(100% 50%, 48% 0, 0 22%, 24% 50%, 0 78%, 50% 100%);
-    opacity: 0.8;
+    background: repeating-linear-gradient(90deg, #fff 0 1px, #8c8c8c 1px 2px);
+    clip-path: polygon(100% 50%, 48% 0, 0 20%, 24% 50%, 0 80%, 48% 100%);
+    opacity: 0.86;
 }
 
 .logo-animation-active .spark {
-    animation: arcaneArrowVolley 560ms cubic-bezier(0.2, 0.84, 0.32, 1) var(--arrow-delay) forwards;
+    animation: arcaneArrowFlight 620ms cubic-bezier(0.18, 0.8, 0.34, 1) var(--arrow-delay) forwards;
 }
 
-.logo-animation-active .spark:nth-child(1) { --arrow-length: 35px; --origin-x: -2px; --origin-y: -6px; --land-x: -50px; --land-y: 18px; --shot-angle: -20deg; --land-angle: 124deg; --arrow-delay: 0ms; }
-.logo-animation-active .spark:nth-child(2) { --arrow-length: 31px; --origin-x: 2px; --origin-y: -7px; --land-x: -24px; --land-y: 28px; --shot-angle: -4deg; --land-angle: 102deg; --arrow-delay: 120ms; }
-.logo-animation-active .spark:nth-child(3) { --arrow-length: 37px; --origin-x: -1px; --origin-y: -6px; --land-x: -6px; --land-y: 21px; --shot-angle: 10deg; --land-angle: 90deg; --arrow-delay: 245ms; }
-.logo-animation-active .spark:nth-child(4) { --arrow-length: 30px; --origin-x: 1px; --origin-y: -6px; --land-x: 17px; --land-y: 30px; --shot-angle: 24deg; --land-angle: 78deg; --arrow-delay: 340ms; }
-.logo-animation-active .spark:nth-child(5) { --arrow-length: 39px; --origin-x: -1px; --origin-y: -6px; --land-x: 41px; --land-y: 24px; --shot-angle: 36deg; --land-angle: 62deg; --arrow-delay: 495ms; }
-.logo-animation-active .spark:nth-child(6) { --arrow-length: 34px; --origin-x: 0px; --origin-y: -7px; --land-x: 58px; --land-y: 15px; --shot-angle: 48deg; --land-angle: 52deg; --arrow-delay: 620ms; }
-.logo-animation-active .spark:nth-child(7) { --arrow-length: 29px; --origin-x: 0px; --origin-y: -6px; --land-x: 24px; --land-y: 34px; --shot-angle: 18deg; --land-angle: 70deg; --arrow-delay: 740ms; }
-.logo-animation-active .spark:nth-child(8) { --arrow-length: 33px; --origin-x: -3px; --origin-y: -6px; --land-x: -39px; --land-y: 33px; --shot-angle: -12deg; --land-angle: 112deg; --arrow-delay: 860ms; }
+/* Irregular, non-radial trajectories from the same tower-window origin */
+.logo-animation-active .spark:nth-child(1) { --arrow-length: 30px; --arc-x: -34px; --arc-y: -18px; --land-x: -56px; --land-y: 12px; --flight-angle: -26deg; --land-angle: 120deg; --arrow-delay: 0ms; }
+.logo-animation-active .spark:nth-child(2) { --arrow-length: 34px; --arc-x: -16px; --arc-y: -24px; --land-x: -30px; --land-y: 22px; --flight-angle: -10deg; --land-angle: 102deg; --arrow-delay: 120ms; }
+.logo-animation-active .spark:nth-child(3) { --arrow-length: 31px; --arc-x: 6px; --arc-y: -18px; --land-x: -10px; --land-y: 18px; --flight-angle: 8deg; --land-angle: 88deg; --arrow-delay: 245ms; }
+.logo-animation-active .spark:nth-child(4) { --arrow-length: 35px; --arc-x: 20px; --arc-y: -22px; --land-x: 20px; --land-y: 24px; --flight-angle: 20deg; --land-angle: 76deg; --arrow-delay: 380ms; }
+.logo-animation-active .spark:nth-child(5) { --arrow-length: 33px; --arc-x: 30px; --arc-y: -18px; --land-x: 44px; --land-y: 20px; --flight-angle: 28deg; --land-angle: 64deg; --arrow-delay: 520ms; }
+.logo-animation-active .spark:nth-child(6) { --arrow-length: 29px; --arc-x: 42px; --arc-y: -12px; --land-x: 62px; --land-y: 14px; --flight-angle: 42deg; --land-angle: 54deg; --arrow-delay: 650ms; }
+.logo-animation-active .spark:nth-child(7) { --arrow-length: 32px; --arc-x: 12px; --arc-y: -28px; --land-x: 30px; --land-y: 28px; --flight-angle: 18deg; --land-angle: 70deg; --arrow-delay: 780ms; }
+.logo-animation-active .spark:nth-child(8) { --arrow-length: 28px; --arc-x: -22px; --arc-y: -14px; --land-x: -44px; --land-y: 26px; --flight-angle: -18deg; --land-angle: 110deg; --arrow-delay: 920ms; }
 
 .hero {
     text-align: center;
@@ -424,19 +426,21 @@ footer p:last-child {
     }
 }
 
-@keyframes arcaneArrowVolley {
+@keyframes arcaneArrowFlight {
     0% {
         opacity: 0;
-        transform: translate3d(var(--origin-x), var(--origin-y), 0) rotate(var(--shot-angle)) scale(0.96);
+        transform: translate3d(var(--origin-x), var(--origin-y), 0) rotate(var(--flight-angle)) scale(0.95);
     }
     18% {
         opacity: 1;
     }
-    72% {
-        opacity: 1;
+    56% {
+        transform: translate3d(var(--arc-x), var(--arc-y), 0) rotate(calc(var(--flight-angle) - 10deg));
+    }
+    82% {
         transform: translate3d(var(--land-x), var(--land-y), 0) rotate(var(--land-angle));
     }
-    84% {
+    92% {
         transform: translate3d(var(--land-x), calc(var(--land-y) + 2px), 0) rotate(calc(var(--land-angle) + 2deg));
     }
     100% {
