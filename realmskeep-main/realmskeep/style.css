@@ -339,3 +339,69 @@ footer p:last-child {
         justify-content: center;
     }
 }
+
+.logo-container {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    overflow: visible;
+}
+
+.logo-link {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    border-radius: 8px;
+}
+
+.logo-link:focus-visible {
+    outline: 2px solid #f4c542;
+    outline-offset: 6px;
+}
+
+.arcane-sparks-layer {
+    position: absolute;
+    inset: 50% auto auto 50%;
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.arcane-spark {
+    position: absolute;
+    left: var(--spark-x);
+    top: var(--spark-y);
+    width: 5px;
+    height: 5px;
+    border-radius: 999px;
+    background: var(--spark-color);
+    box-shadow: 0 0 8px var(--spark-color);
+    opacity: 0;
+}
+
+.arcane-sparks-layer.is-active .arcane-spark {
+    animation: arcaneSpark var(--spark-life) ease-out var(--spark-delay) forwards;
+}
+
+@keyframes arcaneSpark {
+    0% {
+        transform: translate(-50%, -50%) scale(0.2);
+        opacity: 0;
+    }
+    20% {
+        opacity: 0.95;
+    }
+    100% {
+        transform: translate(calc(-50% + var(--spark-drift-x)), calc(-50% + var(--spark-drift-y))) scale(0);
+        opacity: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .arcane-sparks-layer,
+    .arcane-spark {
+        animation: none !important;
+    }
+}
