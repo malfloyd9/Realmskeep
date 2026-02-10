@@ -366,18 +366,18 @@ footer p:last-child {
     width: 1px;
     height: 1px;
     pointer-events: none;
-    z-index: 1;
+    z-index: 3;
 }
 
 .arcane-spark {
     position: absolute;
     left: var(--spark-x);
     top: var(--spark-y);
-    width: 5px;
-    height: 5px;
+    width: 8px;
+    height: 8px;
     border-radius: 999px;
     background: var(--spark-color);
-    box-shadow: 0 0 8px var(--spark-color);
+    box-shadow: 0 0 14px var(--spark-color);
     opacity: 0;
 }
 
