@@ -66,15 +66,113 @@ header {
     background: var(--white);
 }
 
+.logo-container {
+    position: relative;
+}
+
+.logo-container a {
+    position: relative;
+    display: inline-block;
+}
+
 .logo-container img {
     max-width: 250px;
     height: auto;
     transition: transform var(--transition-speed) ease;
+    position: relative;
+    z-index: 2;
 }
 
-.logo-container img:hover {
+.logo-container:hover img,
+.logo-container:focus-within img,
+.logo-container.logo-animation-active img {
     transform: scale(1.05);
 }
+
+.arcane-sparks {
+    position: absolute;
+    inset: -22px -80px -170px -80px;
+    pointer-events: none;
+    z-index: 3;
+    contain: layout paint;
+}
+
+.spark {
+    --arrow-length: 64px;
+    --arrow-thickness: 4px;
+    --origin-x: 0px;
+    --origin-y: -10px;
+    --land-x: 100px;
+    --land-y: 110px;
+    --shot-angle: 8deg;
+    --land-angle: 66deg;
+    --arrow-color: #e6c79f;
+    --arrow-shadow: rgba(26, 18, 8, 0.28);
+    --flame-core: rgba(255, 255, 255, 0.9);
+    --flame-mid: rgba(255, 162, 0, 0.95);
+    --flame-edge: rgba(255, 82, 0, 0.72);
+    --flame-opacity: 0;
+    --arrow-delay: 0ms;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--arrow-length);
+    height: var(--arrow-thickness);
+    border-radius: 999px;
+    opacity: 0;
+    transform-origin: 14% 50%;
+    transform: translate3d(var(--origin-x), var(--origin-y), 0) rotate(var(--shot-angle));
+    background:
+      linear-gradient(90deg, #b57f45 0%, #d8a568 8%, var(--arrow-color) 16%, var(--arrow-color) 82%, #7b5632 100%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.35) inset, 0 1px 3px var(--arrow-shadow);
+    will-change: transform, opacity, filter;
+}
+
+.spark::before {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    width: 11px;
+    height: 10px;
+    transform: translateY(-50%);
+    background: linear-gradient(140deg, #d2d7db 0%, #f8fbff 50%, #87919b 100%);
+    clip-path: polygon(0 10%, 100% 50%, 0 90%, 26% 50%);
+    filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.5));
+}
+
+.spark::after {
+    content: '';
+    position: absolute;
+    left: -12px;
+    top: 50%;
+    width: 19px;
+    height: 18px;
+    transform: translateY(-50%);
+    background:
+      radial-gradient(circle at 28% 50%, var(--flame-core) 0%, var(--flame-mid) 35%, var(--flame-edge) 62%, rgba(255, 60, 0, 0) 75%),
+      linear-gradient(90deg, #f4f8ff 0%, #c0c9d2 45%, rgba(100, 108, 118, 0.2) 100%);
+    clip-path: polygon(100% 48%, 46% 0, 0 16%, 26% 50%, 0 84%, 50% 100%);
+    opacity: var(--flame-opacity);
+    filter: drop-shadow(0 0 6px rgba(255, 120, 0, 0.65));
+}
+
+.logo-animation-active .spark {
+    animation: arcaneArrowVolley 760ms cubic-bezier(0.16, 0.85, 0.22, 1) var(--arrow-delay) forwards;
+}
+
+.logo-animation-active .spark::after {
+    animation: arrowFlameFlicker 520ms steps(3, end) var(--arrow-delay) 2;
+}
+
+.logo-animation-active .spark:nth-child(1) { --arrow-length: 72px; --origin-x: -4px; --origin-y: -8px; --land-x: -136px; --land-y: 94px; --shot-angle: -26deg; --land-angle: 132deg; --arrow-delay: 0ms; }
+.logo-animation-active .spark:nth-child(2) { --arrow-length: 66px; --origin-x: 4px; --origin-y: -11px; --land-x: -76px; --land-y: 142px; --shot-angle: -6deg; --land-angle: 108deg; --arrow-delay: 155ms; --flame-opacity: 1; }
+.logo-animation-active .spark:nth-child(3) { --arrow-length: 70px; --origin-x: -1px; --origin-y: -10px; --land-x: -18px; --land-y: 124px; --shot-angle: 13deg; --land-angle: 94deg; --arrow-delay: 300ms; }
+.logo-animation-active .spark:nth-child(4) { --arrow-length: 64px; --origin-x: 2px; --origin-y: -9px; --land-x: 46px; --land-y: 134px; --shot-angle: 27deg; --land-angle: 82deg; --arrow-delay: 445ms; }
+.logo-animation-active .spark:nth-child(5) { --arrow-length: 76px; --origin-x: -3px; --origin-y: -10px; --land-x: 114px; --land-y: 114px; --shot-angle: 42deg; --land-angle: 64deg; --arrow-delay: 590ms; --flame-opacity: 1; }
+.logo-animation-active .spark:nth-child(6) { --arrow-length: 82px; --origin-x: 1px; --origin-y: -12px; --land-x: 162px; --land-y: 86px; --shot-angle: 57deg; --land-angle: 52deg; --arrow-delay: 745ms; }
+.logo-animation-active .spark:nth-child(7) { --arrow-length: 62px; --origin-x: 0px; --origin-y: -10px; --land-x: 74px; --land-y: 154px; --shot-angle: 22deg; --land-angle: 74deg; --arrow-delay: 900ms; --flame-opacity: 1; }
+.logo-animation-active .spark:nth-child(8) { --arrow-length: 68px; --origin-x: -6px; --origin-y: -9px; --land-x: -108px; --land-y: 166px; --shot-angle: -14deg; --land-angle: 120deg; --arrow-delay: 1060ms; }
 
 .hero {
     text-align: center;
@@ -337,5 +435,53 @@ footer p:last-child {
         flex-wrap: wrap;
         width: 100%;
         justify-content: center;
+    }
+}
+
+@keyframes arcaneArrowVolley {
+    0% {
+        opacity: 0;
+        transform: translate3d(var(--origin-x), var(--origin-y), 0) rotate(var(--shot-angle));
+        filter: brightness(1);
+    }
+    16% {
+        opacity: 1;
+        filter: brightness(1.22);
+    }
+    70% {
+        opacity: 1;
+        transform: translate3d(var(--land-x), var(--land-y), 0) rotate(var(--land-angle));
+        filter: brightness(1.1);
+    }
+    82% {
+        transform: translate3d(var(--land-x), calc(var(--land-y) + 6px), 0) rotate(calc(var(--land-angle) + 2deg));
+    }
+    100% {
+        opacity: 1;
+        transform: translate3d(var(--land-x), var(--land-y), 0) rotate(var(--land-angle));
+        filter: brightness(1);
+    }
+}
+
+@keyframes arrowFlameFlicker {
+    0% {
+        filter: drop-shadow(0 0 2px rgba(255, 120, 0, 0.5));
+    }
+    50% {
+        filter: drop-shadow(0 0 8px rgba(255, 120, 0, 0.8));
+    }
+    100% {
+        filter: drop-shadow(0 0 4px rgba(255, 120, 0, 0.6));
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .hero h1,
+    .hero p,
+    .hero .btn,
+    .logo-container img,
+    .logo-animation-active .spark {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
     }
 }

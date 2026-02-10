@@ -1,6 +1,7 @@
 (function () {
   const EVENT_NAMES = {
     HOMEPAGE_CTA_CLICKED: 'homepage_cta_clicked',
+    HERO_LOGO_ANIMATION_PLAYED: 'hero_logo_animation_played',
     EMAIL_MODAL_SHOWN: 'email_modal_shown',
     EMAIL_MODAL_DISMISSED: 'email_modal_dismissed',
     EMAIL_MODAL_SUBMITTED: 'email_modal_submitted',
