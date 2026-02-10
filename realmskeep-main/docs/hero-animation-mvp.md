@@ -4,7 +4,7 @@
 
 An Arcane Sparks animation MVP was added to the header logo area as a lightweight concept test for the hero/top branding region.
 
-- The logo now has a spell layer with 8 animated bolt streaks that radiate outward from the logo/tower center.
+- The logo now has a spell layer with 8 animated bolt streaks that fire in sequence (one spell, then another) in varied, non-symmetric directions from the tower/logo center.
 - Each bolt has distinct blue/purple/cyan color variation and glow values chosen to read clearly against the white header background.
 - Animation play behavior:
   - Plays once on initial page load.
@@ -22,14 +22,14 @@ The values below can be adjusted in `realmskeep/main.js` and `realmskeep/style.c
 
 - `replayThrottleMs` (currently `1800` ms)
   - Controls minimum time between hover/focus replays.
-- `animationDurationMs` (currently `900` ms)
+- `animationDurationMs` (currently `1450` ms)
   - Controls how long the active class stays on.
 - Bolt count and direction
   - Modify `.spark` elements in `index.html` and `--bolt-angle` / `--bolt-length` per `:nth-child(...)` in `style.css`.
 - Color profile
   - Tweak `--spell-color-core`, `--spell-color-mid`, and `--spell-color-glow` values per bolt.
 - Motion feel
-  - Adjust `@keyframes arcaneSpellShot` and `@keyframes arcaneImpact` timing curves and scale values.
+  - Adjust `@keyframes arcaneCartoonZap`, `@keyframes arcaneMuzzleFlash`, and `@keyframes arcaneImpactPop` timing/shape values.
 
 ## Reduced-motion behavior
 
@@ -44,7 +44,7 @@ This ensures reduced-motion users do not get decorative motion effects.
 ## Manual QA checklist
 
 1. Load `realmskeep/index.html` in a browser with DevTools console open.
-2. Confirm on first load that spell bolts shoot outward once from the logo area.
+2. Confirm on first load that spell bolts zap out in sequence (not all at once) from the logo area.
 3. Confirm multiple colors (blue/purple/cyan family) are visible against the white header.
 4. Confirm console logs include one `hero_logo_animation_played` event with `trigger: 'load'`.
 5. Hover over the logo and confirm replay occurs.

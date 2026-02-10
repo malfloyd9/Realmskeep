@@ -196,7 +196,7 @@
     const logoTrigger = document.querySelector('[data-hero-logo-trigger]');
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     const replayThrottleMs = 1800;
-    const animationDurationMs = 900;
+    const animationDurationMs = 1450;
     let animationCleanupTimer;
     let lastPlayAt = 0;
 

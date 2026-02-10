@@ -91,65 +91,85 @@ header {
 
 .arcane-sparks {
     position: absolute;
-    inset: -16px;
+    inset: -18px;
     pointer-events: none;
     z-index: 3;
     contain: layout paint;
 }
 
 .spark {
-    --bolt-length: 80px;
-    --bolt-thickness: 4px;
-    --bolt-angle: 0deg;
-    --impact-x: 0px;
-    --impact-y: 0px;
-    --spell-color-core: #3a2dff;
-    --spell-color-mid: #00a8ff;
-    --spell-color-glow: rgba(0, 168, 255, 0.45);
+    --spell-color-core: #2748ff;
+    --spell-color-mid: #00c8ff;
+    --spell-color-glow: rgba(39, 72, 255, 0.45);
+    --zap-width: 62px;
+    --zap-thickness: 5px;
+    --zap-angle: -45deg;
+    --zap-x: 0px;
+    --zap-y: 0px;
+    --zap-delay: 0ms;
     position: absolute;
     top: 50%;
     left: 50%;
-    width: var(--bolt-length);
-    height: var(--bolt-thickness);
+    width: var(--zap-width);
+    height: var(--zap-thickness);
+    opacity: 0;
     border-radius: 999px;
     transform-origin: left center;
-    transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(0.05);
+    transform: translate3d(var(--zap-x), var(--zap-y), 0) rotate(var(--zap-angle)) scaleX(0.08);
+    background:
+        linear-gradient(90deg, #ffffff 0%, #f8f7ff 14%, var(--spell-color-core) 48%, var(--spell-color-mid) 82%, rgba(255, 255, 255, 0) 100%);
+    clip-path: polygon(0 40%, 14% 15%, 33% 66%, 48% 20%, 62% 78%, 74% 30%, 90% 64%, 100% 44%, 100% 58%, 88% 74%, 74% 44%, 60% 90%, 46% 36%, 33% 82%, 15% 42%, 0 62%);
+    box-shadow: 0 0 10px var(--spell-color-glow), 0 0 24px var(--spell-color-glow);
+    will-change: transform, opacity, filter;
+}
+
+.spark::before {
+    content: '';
+    position: absolute;
+    left: -3px;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, rgba(255,255,255,0) 75%);
     opacity: 0;
-    background: linear-gradient(90deg, #ffffff 0%, var(--spell-color-core) 28%, var(--spell-color-mid) 60%, rgba(255, 255, 255, 0) 100%);
-    box-shadow: 0 0 10px var(--spell-color-glow), 0 0 22px var(--spell-color-glow);
-    will-change: transform, opacity;
 }
 
 .spark::after {
     content: '';
     position: absolute;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    left: calc(100% - 4px);
+    left: calc(100% - 2px);
     top: 50%;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle, #ffffff 0%, var(--spell-color-mid) 45%, rgba(255, 255, 255, 0) 75%);
-    box-shadow: 0 0 12px 2px var(--spell-color-glow);
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0.35);
+    background: radial-gradient(circle, #ffffff 0%, var(--spell-color-mid) 40%, rgba(255,255,255,0) 74%);
+    box-shadow: 0 0 16px 4px var(--spell-color-glow);
     opacity: 0;
 }
 
 .logo-animation-active .spark {
-    animation: arcaneSpellShot 900ms cubic-bezier(0.21, 0.66, 0.2, 1) forwards;
+    animation: arcaneCartoonZap 420ms steps(5, end) var(--zap-delay) forwards;
+}
+
+.logo-animation-active .spark::before {
+    animation: arcaneMuzzleFlash 420ms steps(2, end) var(--zap-delay) forwards;
 }
 
 .logo-animation-active .spark::after {
-    animation: arcaneImpact 900ms ease-out forwards;
+    animation: arcaneImpactPop 420ms ease-out var(--zap-delay) forwards;
 }
 
-.logo-animation-active .spark:nth-child(1) { --bolt-angle: -150deg; --bolt-length: 74px; --spell-color-core: #4d4dff; --spell-color-mid: #00a8ff; --spell-color-glow: rgba(0, 168, 255, 0.6); animation-delay: 0ms; }
-.logo-animation-active .spark:nth-child(2) { --bolt-angle: -122deg; --bolt-length: 86px; --spell-color-core: #6a40ff; --spell-color-mid: #00dcff; --spell-color-glow: rgba(106, 64, 255, 0.55); animation-delay: 60ms; }
-.logo-animation-active .spark:nth-child(3) { --bolt-angle: -86deg; --bolt-length: 82px; --spell-color-core: #00a8ff; --spell-color-mid: #3affd8; --spell-color-glow: rgba(0, 168, 255, 0.55); animation-delay: 120ms; }
-.logo-animation-active .spark:nth-child(4) { --bolt-angle: -38deg; --bolt-length: 90px; --spell-color-core: #8a2dff; --spell-color-mid: #4dc6ff; --spell-color-glow: rgba(138, 45, 255, 0.55); animation-delay: 170ms; }
-.logo-animation-active .spark:nth-child(5) { --bolt-angle: 18deg; --bolt-length: 78px; --spell-color-core: #3554ff; --spell-color-mid: #00b2ff; --spell-color-glow: rgba(0, 178, 255, 0.55); animation-delay: 220ms; }
-.logo-animation-active .spark:nth-child(6) { --bolt-angle: 64deg; --bolt-length: 92px; --spell-color-core: #7436ff; --spell-color-mid: #00e8ff; --spell-color-glow: rgba(116, 54, 255, 0.6); animation-delay: 250ms; }
-.logo-animation-active .spark:nth-child(7) { --bolt-angle: 112deg; --bolt-length: 84px; --spell-color-core: #0088ff; --spell-color-mid: #20ffea; --spell-color-glow: rgba(0, 136, 255, 0.55); animation-delay: 290ms; }
-.logo-animation-active .spark:nth-child(8) { --bolt-angle: 152deg; --bolt-length: 76px; --spell-color-core: #5f39ff; --spell-color-mid: #24b8ff; --spell-color-glow: rgba(95, 57, 255, 0.6); animation-delay: 330ms; }
+.logo-animation-active .spark:nth-child(1) { --zap-width: 88px; --zap-thickness: 6px; --zap-angle: -116deg; --zap-x: -4px; --zap-y: -10px; --zap-delay: 0ms; --spell-color-core: #3f37ff; --spell-color-mid: #00d4ff; --spell-color-glow: rgba(63, 55, 255, 0.6); }
+.logo-animation-active .spark:nth-child(2) { --zap-width: 72px; --zap-thickness: 5px; --zap-angle: -28deg; --zap-x: 8px; --zap-y: -8px; --zap-delay: 130ms; --spell-color-core: #6a30ff; --spell-color-mid: #48c8ff; --spell-color-glow: rgba(106, 48, 255, 0.56); }
+.logo-animation-active .spark:nth-child(3) { --zap-width: 95px; --zap-thickness: 6px; --zap-angle: 66deg; --zap-x: 2px; --zap-y: 2px; --zap-delay: 250ms; --spell-color-core: #007dff; --spell-color-mid: #00fff2; --spell-color-glow: rgba(0, 125, 255, 0.55); }
+.logo-animation-active .spark:nth-child(4) { --zap-width: 84px; --zap-thickness: 5px; --zap-angle: -152deg; --zap-x: -2px; --zap-y: 6px; --zap-delay: 370ms; --spell-color-core: #384cff; --spell-color-mid: #7ad2ff; --spell-color-glow: rgba(56, 76, 255, 0.56); }
+.logo-animation-active .spark:nth-child(5) { --zap-width: 78px; --zap-thickness: 5px; --zap-angle: 18deg; --zap-x: 10px; --zap-y: -2px; --zap-delay: 510ms; --spell-color-core: #8a3bff; --spell-color-mid: #00c1ff; --spell-color-glow: rgba(138, 59, 255, 0.58); }
+.logo-animation-active .spark:nth-child(6) { --zap-width: 90px; --zap-thickness: 6px; --zap-angle: 124deg; --zap-x: -6px; --zap-y: -4px; --zap-delay: 660ms; --spell-color-core: #1b5cff; --spell-color-mid: #00edff; --spell-color-glow: rgba(27, 92, 255, 0.55); }
+.logo-animation-active .spark:nth-child(7) { --zap-width: 70px; --zap-thickness: 5px; --zap-angle: -70deg; --zap-x: 5px; --zap-y: -6px; --zap-delay: 800ms; --spell-color-core: #6539ff; --spell-color-mid: #4ca8ff; --spell-color-glow: rgba(101, 57, 255, 0.54); }
+.logo-animation-active .spark:nth-child(8) { --zap-width: 98px; --zap-thickness: 6px; --zap-angle: 154deg; --zap-x: -7px; --zap-y: 4px; --zap-delay: 930ms; --spell-color-core: #006eff; --spell-color-mid: #49fff3; --spell-color-glow: rgba(0, 110, 255, 0.57); }
 
 .hero {
     text-align: center;
@@ -415,43 +435,57 @@ footer p:last-child {
     }
 }
 
-@keyframes arcaneSpellShot {
+@keyframes arcaneCartoonZap {
     0% {
         opacity: 0;
-        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(0.05);
+        transform: translate3d(var(--zap-x), var(--zap-y), 0) rotate(var(--zap-angle)) scaleX(0.05) scaleY(0.9);
         filter: brightness(1);
     }
-    22% {
+    30% {
         opacity: 1;
-        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(1);
-        filter: brightness(1.35);
+        transform: translate3d(var(--zap-x), var(--zap-y), 0) rotate(var(--zap-angle)) scaleX(1.05) scaleY(1.2);
+        filter: brightness(1.5);
     }
-    78% {
+    75% {
         opacity: 0.95;
-        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(1);
+        transform: translate3d(var(--zap-x), var(--zap-y), 0) rotate(var(--zap-angle)) scaleX(0.92) scaleY(0.96);
     }
     100% {
         opacity: 0;
-        transform: translate3d(0, 0, 0) rotate(var(--bolt-angle)) scaleX(1.12);
-        filter: brightness(1.05);
+        transform: translate3d(var(--zap-x), var(--zap-y), 0) rotate(var(--zap-angle)) scaleX(1.12) scaleY(1.04);
+        filter: brightness(1.15);
     }
 }
 
-@keyframes arcaneImpact {
-    0%, 70% {
+@keyframes arcaneMuzzleFlash {
+    0%, 22% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.45);
+    }
+    38% {
+        opacity: 0.95;
+        transform: translateY(-50%) scale(1.15);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50%) scale(0.8);
+    }
+}
+
+@keyframes arcaneImpactPop {
+    0%, 56% {
         opacity: 0;
         transform: translate(-50%, -50%) scale(0.35);
     }
-    82% {
+    76% {
         opacity: 1;
-        transform: translate(-50%, -50%) scale(1.1);
+        transform: translate(-50%, -50%) scale(1.18);
     }
     100% {
         opacity: 0;
-        transform: translate(-50%, -50%) scale(1.55);
+        transform: translate(-50%, -50%) scale(1.65);
     }
 }
-
 @media (prefers-reduced-motion: reduce) {
     .hero h1,
     .hero p,
