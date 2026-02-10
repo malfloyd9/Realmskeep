@@ -4,8 +4,8 @@
 
 An Arcane Sparks animation MVP was added to the header logo area as a lightweight concept test for the hero/top branding region.
 
-- The logo now has an arrow-volley layer with 8 cartoon arrows that fire one-by-one from the tower window area in varied directions and land outside the logo image, appearing stuck in the banner-space below.
-- Some arrows are flaming (animated ember/flicker), while others are standard arrows for visual variety and clearer “volley” storytelling.
+- The logo now has an arrow-volley layer with 8 hand-drawn-style arrows that fire one-by-one from the tower window area in irregular (non-radial) directions and stick near the logo edge.
+- Arrows are monochrome (black/white) to match the site’s visual palette and keep contrast clean in the white header.
 - Animation play behavior:
   - Plays once on initial page load.
   - Replays on pointer hover.
@@ -22,14 +22,14 @@ The values below can be adjusted in `realmskeep/main.js` and `realmskeep/style.c
 
 - `replayThrottleMs` (currently `1800` ms)
   - Controls minimum time between hover/focus replays.
-- `animationDurationMs` (currently `2200` ms)
+- `animationDurationMs` (currently `1600` ms)
   - Controls how long the active class stays on.
 - Arrow count and landing pattern
   - Modify `.spark` elements in `index.html` and `--origin-*`, `--land-*`, and angle vars per `:nth-child(...)` in `style.css`.
 - Arrow styling
-  - Tweak shaft/head/flame colors and `--flame-opacity` per arrow to control which arrows are flaming.
+  - Tweak shaft/head/fletching grayscale values and line thickness for hand-drawn look.
 - Motion feel
-  - Adjust `@keyframes arcaneArrowVolley` and `@keyframes arrowFlameFlicker` timing/impact values.
+  - Adjust `@keyframes arcaneArrowVolley` timing and the `--land-*` coordinates to control randomness and landing distance.
 
 ## Reduced-motion behavior
 
@@ -45,7 +45,7 @@ This ensures reduced-motion users do not get decorative motion effects.
 
 1. Load `realmskeep/index.html` in a browser with DevTools console open.
 2. Confirm on first load that arrows fire one-by-one from the tower window area.
-3. Confirm some arrows appear flaming and all arrows remain visible over the white header and into the hero/banner area.
+3. Confirm arrows are black/white, land in random-looking positions, and do not touch the hero banner image area.
 4. Confirm console logs include one `hero_logo_animation_played` event with `trigger: 'load'`.
 5. Hover over the logo and confirm replay occurs.
 6. Confirm console logs include `hero_logo_animation_played` with `trigger: 'hover'`.
