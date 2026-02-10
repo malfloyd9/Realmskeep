@@ -36,7 +36,7 @@ The values below can be adjusted in `realmskeep/main.js` and `realmskeep/style.c
 When `prefers-reduced-motion: reduce` is enabled:
 
 - Hero entry animations are disabled.
-- Logo transition/spell animation are disabled.
+- Logo transition/arrow animation is disabled.
 - JS animation setup exits early and does not autoplay/replay, so no extra animation event is emitted.
 
 This ensures reduced-motion users do not get decorative motion effects.
