@@ -66,15 +66,58 @@ header {
     background: var(--white);
 }
 
+.logo-container {
+    position: relative;
+}
+
+.logo-container a {
+    position: relative;
+    display: inline-block;
+}
+
 .logo-container img {
     max-width: 250px;
     height: auto;
     transition: transform var(--transition-speed) ease;
+    position: relative;
+    z-index: 2;
 }
 
-.logo-container img:hover {
+.logo-container:hover img,
+.logo-container:focus-within img,
+.logo-container.logo-animation-active img {
     transform: scale(1.05);
 }
+
+.arcane-sparks {
+    position: absolute;
+    inset: -8px;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.spark {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #fff6b6, #ffcf66 55%, rgba(255, 207, 102, 0));
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.3);
+}
+
+.logo-animation-active .spark {
+    animation: arcaneSparkBurst 650ms ease-out forwards;
+}
+
+.logo-animation-active .spark:nth-child(1) { top: 12%; left: 14%; animation-delay: 0ms; }
+.logo-animation-active .spark:nth-child(2) { top: 22%; right: 10%; animation-delay: 45ms; }
+.logo-animation-active .spark:nth-child(3) { bottom: 28%; left: 8%; animation-delay: 80ms; }
+.logo-animation-active .spark:nth-child(4) { bottom: 12%; right: 16%; animation-delay: 100ms; }
+.logo-animation-active .spark:nth-child(5) { top: 42%; left: 50%; animation-delay: 130ms; }
+.logo-animation-active .spark:nth-child(6) { top: 4%; left: 45%; animation-delay: 170ms; }
+.logo-animation-active .spark:nth-child(7) { bottom: 8%; left: 40%; animation-delay: 210ms; }
+.logo-animation-active .spark:nth-child(8) { top: 58%; right: 28%; animation-delay: 240ms; }
 
 .hero {
     text-align: center;
@@ -337,5 +380,31 @@ footer p:last-child {
         flex-wrap: wrap;
         width: 100%;
         justify-content: center;
+    }
+}
+
+@keyframes arcaneSparkBurst {
+    0% {
+        opacity: 0;
+        transform: translate3d(0, 0, 0) scale(0.3);
+    }
+    20% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate3d(0, -24px, 0) scale(1.15);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero h1,
+    .hero p,
+    .hero .btn,
+    .logo-container img,
+    .logo-animation-active .spark {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
     }
 }
