@@ -191,80 +191,11 @@
     };
   }
 
-  function setupHeroLogoAnimation() {
-    const logoArea = document.querySelector('[data-hero-logo-area]');
-    const logoTrigger = document.querySelector('[data-hero-logo-trigger]');
-    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const replayThrottleMs = 1800;
-    const animationDurationMs = 1450;
-    let animationCleanupTimer;
-    let lastPlayAt = 0;
-
-    if (!logoArea || !logoTrigger || motionQuery.matches) {
-      return function cleanup() {
-        if (animationCleanupTimer) {
-          window.clearTimeout(animationCleanupTimer);
-        }
-      };
-    }
-
-    function playAnimation(trigger) {
-      const now = Date.now();
-
-      if (trigger !== 'load' && now - lastPlayAt < replayThrottleMs) {
-        return;
-      }
-
-      lastPlayAt = now;
-      logoArea.classList.remove('logo-animation-active');
-
-      window.requestAnimationFrame(function () {
-        logoArea.classList.add('logo-animation-active');
-      });
-
-      if (animationCleanupTimer) {
-        window.clearTimeout(animationCleanupTimer);
-      }
-
-      animationCleanupTimer = window.setTimeout(function () {
-        logoArea.classList.remove('logo-animation-active');
-      }, animationDurationMs);
-
-      trackEvent(EVENT_NAMES.HERO_LOGO_ANIMATION_PLAYED, {
-        page,
-        trigger,
-        timestamp: getIsoTimestamp(),
-      });
-    }
-
-    const onHover = function () {
-      playAnimation('hover');
-    };
-
-    const onFocus = function () {
-      playAnimation('focus');
-    };
-
-    logoArea.addEventListener('mouseenter', onHover);
-    logoTrigger.addEventListener('focus', onFocus);
-    playAnimation('load');
-
-    return function cleanup() {
-      logoArea.removeEventListener('mouseenter', onHover);
-      logoTrigger.removeEventListener('focus', onFocus);
-
-      if (animationCleanupTimer) {
-        window.clearTimeout(animationCleanupTimer);
-      }
-    };
-  }
-
   const cleanups = [
     setupCtaTracking(),
     setupEmailModalTracking(),
     setupScrollDepthTracking(),
     setupTimeOnPageTracking(),
-    setupHeroLogoAnimation(),
   ];
 
   function cleanupAll() {
