@@ -263,7 +263,7 @@ footer p:last-child {
 }
 
 .testimonials-section {
-    padding: 5rem 0;
+    padding: 2.5rem 0;
     background: var(--black);
     color: var(--white);
     overflow: hidden;
@@ -282,8 +282,12 @@ footer p:last-child {
     display: flex;
     gap: 1.5rem;
     width: max-content;
-    animation: marquee 26s linear infinite;
+    animation: marquee 120s linear infinite;
     padding: 0 1rem;
+}
+
+.testimonials-track:hover {
+    animation-play-state: paused;
 }
 
 .testimonial-card {
@@ -293,6 +297,15 @@ footer p:last-child {
     border-radius: 10px;
     padding: 1.5rem;
     backdrop-filter: blur(2px);
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, border-color var(--transition-speed) ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.testimonial-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.35);
+    border-color: rgba(255,255,255,0.4);
 }
 
 .testimonial-meta {
@@ -307,11 +320,24 @@ footer p:last-child {
 .testimonial-card .quote {
     font-size: 1.05rem;
     margin-bottom: 0.8rem;
+    flex: 1;
+}
+
+.testimonial-card .author-block {
+    margin-top: auto;
+    text-align: right;
 }
 
 .testimonial-card .author {
     opacity: 0.85;
-    margin-bottom: 0.6rem;
+}
+
+.testimonial-card .author-title {
+    font-size: 0.75rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #f4c542;
+    opacity: 0.7;
 }
 
 .testimonial-card .role {
