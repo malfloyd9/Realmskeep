@@ -145,6 +145,7 @@
   var PURPLE = '#7B2FBE';
   var FIRE_RED = '#DC2626';
   var ELECTRIC_BLUE = '#33CFFF';
+  var PLASMA_PINK = '#FF2A6D';
 
   var duelTweens = [];
   var duelGroup = null;
@@ -156,6 +157,7 @@
   var hoverHandler = null;
   var leaveHandler = null;
   var duelLogoTrigger = null;
+  var sparkGlowFilter = null;
   var flashGradId = 0;
 
   function startEternalDuel() {
@@ -184,6 +186,27 @@
     blur.setAttribute('stdDeviation', '4');
     filter.appendChild(blur);
     duelDefs.appendChild(filter);
+
+    // Spark glow filter — makes battle sparks bloom
+    sparkGlowFilter = document.createElementNS(SVG_NS, 'filter');
+    sparkGlowFilter.setAttribute('id', 'spark-glow');
+    sparkGlowFilter.setAttribute('x', '-100%');
+    sparkGlowFilter.setAttribute('y', '-100%');
+    sparkGlowFilter.setAttribute('width', '300%');
+    sparkGlowFilter.setAttribute('height', '300%');
+    var sparkBlur = document.createElementNS(SVG_NS, 'feGaussianBlur');
+    sparkBlur.setAttribute('stdDeviation', '3');
+    sparkBlur.setAttribute('result', 'blur');
+    sparkGlowFilter.appendChild(sparkBlur);
+    var merge = document.createElementNS(SVG_NS, 'feMerge');
+    var mergeBlur = document.createElementNS(SVG_NS, 'feMergeNode');
+    mergeBlur.setAttribute('in', 'blur');
+    merge.appendChild(mergeBlur);
+    var mergeSource = document.createElementNS(SVG_NS, 'feMergeNode');
+    mergeSource.setAttribute('in', 'SourceGraphic');
+    merge.appendChild(mergeSource);
+    sparkGlowFilter.appendChild(merge);
+    duelDefs.appendChild(sparkGlowFilter);
 
     svg.insertBefore(duelDefs, svg.firstChild);
 
@@ -272,6 +295,7 @@
     purpleRect = null;
     redRect = null;
     duelLogoTrigger = null;
+    sparkGlowFilter = null;
   }
 
   function startIdlePulse() {
@@ -300,10 +324,13 @@
   }
 
   function scheduleIdleSparks() {
-    var delay = gsap.utils.random(1.5, 4);
+    var delay = gsap.utils.random(0.8, 2.5);
     var call = gsap.delayedCall(delay, function () {
       if (!isHovering && duelGroup) {
-        spawnDuelSparks({ colors: [FIRE_RED, ELECTRIC_BLUE], count: Math.floor(gsap.utils.random(2, 5)) });
+        spawnDuelSparks({ colors: [FIRE_RED, ELECTRIC_BLUE], count: Math.floor(gsap.utils.random(3, 6)) });
+        if (Math.random() > 0.5) {
+          spawnArcaneBolts({ colors: [PURPLE, FIRE_RED], count: Math.floor(gsap.utils.random(1, 3)) });
+        }
         scheduleIdleSparks();
       }
     });
@@ -318,11 +345,11 @@
     duelTweens = [];
 
     purpleRect.setAttribute('fill', ELECTRIC_BLUE);
-    redRect.setAttribute('fill', FIRE_RED);
+    redRect.setAttribute('fill', PLASMA_PINK);
 
     var tw1 = gsap.to(purpleRect, {
-      opacity: 0.9,
-      duration: 0.3,
+      opacity: 0.95,
+      duration: 0.25,
       repeat: -1,
       yoyo: true,
       ease: 'power2.inOut',
@@ -330,34 +357,50 @@
     duelTweens.push(tw1);
 
     var tw2 = gsap.to(redRect, {
-      opacity: 0.9,
-      duration: 0.3,
+      opacity: 0.95,
+      duration: 0.25,
       repeat: -1,
       yoyo: true,
       ease: 'power2.inOut',
-      delay: 0.15,
+      delay: 0.12,
     });
     duelTweens.push(tw2);
 
     glowPath.setAttribute('fill', ELECTRIC_BLUE);
     var tw3 = gsap.to(glowPath, {
-      opacity: 0.6,
-      duration: 0.4,
+      opacity: 0.8,
+      duration: 0.3,
       ease: 'power2.out',
     });
     duelTweens.push(tw3);
 
     var tw4 = gsap.to(glowPath, {
-      fill: FIRE_RED,
-      duration: 0.5,
+      fill: PLASMA_PINK,
+      duration: 0.4,
       repeat: -1,
       yoyo: true,
       ease: 'sine.inOut',
-      delay: 0.4,
+      delay: 0.3,
     });
     duelTweens.push(tw4);
 
-    spawnDuelSparks({ colors: [ELECTRIC_BLUE, FIRE_RED] });
+    spawnDuelSparks({ colors: [ELECTRIC_BLUE, PLASMA_PINK], count: 8, battle: true });
+    spawnArcaneBolts({ colors: [ELECTRIC_BLUE, PLASMA_PINK], count: 3 });
+    scheduleBattleSparks();
+  }
+
+  function scheduleBattleSparks() {
+    var delay = gsap.utils.random(0.4, 1.0);
+    var call = gsap.delayedCall(delay, function () {
+      if (isHovering && duelGroup) {
+        spawnDuelSparks({ colors: [ELECTRIC_BLUE, PLASMA_PINK], count: Math.floor(gsap.utils.random(4, 8)), battle: true });
+        if (Math.random() > 0.6) {
+          spawnArcaneBolts({ colors: [ELECTRIC_BLUE, PLASMA_PINK], count: Math.floor(gsap.utils.random(1, 3)) });
+        }
+        scheduleBattleSparks();
+      }
+    });
+    duelTweens.push(call);
   }
 
   function exitBattle() {
@@ -393,10 +436,16 @@
     var colors = (opts && opts.colors) || [ELECTRIC_BLUE, FIRE_RED];
     var colorA = colors[0];
     var colorB = colors[1];
+    var battle = (opts && opts.battle) || false;
     var box = windowEl.getBBox();
     var cx = box.x + box.width / 2;
     var cy = box.y + box.height / 2;
     var count = (opts && opts.count) || Math.floor(gsap.utils.random(3, 7));
+
+    var radiusMin = battle ? 2 : 1;
+    var radiusMax = battle ? 5 : 2.5;
+    var distMin = battle ? 40 : 25;
+    var distMax = battle ? 120 : 70;
 
     var colorAAvgX = 0, colorBAvgX = 0;
     var colorACount = 0, colorBCount = 0;
@@ -405,23 +454,27 @@
       var spark = document.createElementNS(SVG_NS, 'circle');
       var isColorA = Math.random() > 0.5;
       var color = isColorA ? colorA : colorB;
-      spark.setAttribute('r', gsap.utils.random(1, 2.5));
+      spark.setAttribute('r', gsap.utils.random(radiusMin, radiusMax));
       spark.setAttribute('fill', color);
       spark.style.pointerEvents = 'none';
 
-      gsap.set(spark, { attr: { cx: cx, cy: cy }, opacity: 0.9 });
+      if (battle && sparkGlowFilter) {
+        spark.setAttribute('filter', 'url(#spark-glow)');
+      }
+
+      gsap.set(spark, { attr: { cx: cx, cy: cy }, opacity: 1 });
       svg.appendChild(spark);
 
-      var duration = gsap.utils.random(0.6, 1.4);
+      var duration = gsap.utils.random(0.6, battle ? 1.8 : 1.4);
       var angle = gsap.utils.random(0, Math.PI * 2);
-      var dist = gsap.utils.random(25, 70);
+      var dist = gsap.utils.random(distMin, distMax);
       var dx = Math.cos(angle) * dist;
 
       if (isColorA) { colorAAvgX += dx; colorACount++; }
       else { colorBAvgX += dx; colorBCount++; }
 
       gsap.to(spark, {
-        attr: { cx: cx + dx, cy: cy + Math.sin(angle) * dist },
+        attr: { cx: cx + dx, cy: cy + Math.sin(angle) * dist, r: battle ? gsap.utils.random(0.5, 1.5) : 0.5 },
         duration: duration,
         ease: 'power2.out',
         onComplete: function () { this.targets()[0].remove(); },
@@ -435,10 +488,10 @@
       });
     }
 
-    flashWindowGradient(colorA, colorB, colorAAvgX, colorBAvgX, colorACount, colorBCount);
+    flashWindowGradient(colorA, colorB, colorAAvgX, colorBAvgX, colorACount, colorBCount, battle);
   }
 
-  function flashWindowGradient(colorA, colorB, avgXA, avgXB, countA, countB) {
+  function flashWindowGradient(colorA, colorB, avgXA, avgXB, countA, countB, battle) {
     var svg = document.querySelector('#LOGO');
     var windowEl = document.querySelector('#window');
     if (!svg || !windowEl) return;
@@ -493,14 +546,17 @@
     var parent = duelGroup || svg;
     parent.appendChild(flashEl);
 
+    var flashPeak = battle ? 1.0 : 0.85;
+    var flashFade = battle ? 0.6 : 1.0;
+
     gsap.to(flashEl, {
-      opacity: 0.85,
-      duration: 0.1,
+      opacity: flashPeak,
+      duration: 0.08,
       ease: 'power2.out',
       onComplete: function () {
         gsap.to(flashEl, {
           opacity: 0,
-          duration: 1.0,
+          duration: flashFade,
           ease: 'power1.in',
           onComplete: function () {
             flashEl.remove();
@@ -509,6 +565,93 @@
         });
       },
     });
+
+    // White-hot core flash in battle mode
+    if (battle) {
+      var coreFlash = flashEl.cloneNode(true);
+      coreFlash.setAttribute('fill', '#ffffff');
+      parent.appendChild(coreFlash);
+      gsap.set(coreFlash, { opacity: 0 });
+      gsap.to(coreFlash, {
+        opacity: 0.6,
+        duration: 0.05,
+        ease: 'power2.out',
+        onComplete: function () {
+          gsap.to(coreFlash, {
+            opacity: 0,
+            duration: 0.3,
+            ease: 'power2.in',
+            onComplete: function () { coreFlash.remove(); },
+          });
+        },
+      });
+    }
+  }
+
+  // Arcane bolt streaks — sharp lines that fire outward from the window
+  function spawnArcaneBolts(opts) {
+    var svg = document.querySelector('#LOGO');
+    var windowEl = document.querySelector('#window');
+    if (!svg || !windowEl) return;
+
+    var colors = (opts && opts.colors) || [ELECTRIC_BLUE, PLASMA_PINK];
+    var colorA = colors[0];
+    var colorB = colors[1];
+    var count = (opts && opts.count) || 2;
+    var box = windowEl.getBBox();
+    var cx = box.x + box.width / 2;
+    var cy = box.y + box.height / 2;
+
+    for (var i = 0; i < count; i++) {
+      var bolt = document.createElementNS(SVG_NS, 'line');
+      var color = Math.random() > 0.5 ? colorA : colorB;
+      var angle = gsap.utils.random(0, Math.PI * 2);
+      var boltLength = gsap.utils.random(30, 80);
+
+      var startDist = gsap.utils.random(5, 15);
+      var x1 = cx + Math.cos(angle) * startDist;
+      var y1 = cy + Math.sin(angle) * startDist;
+
+      bolt.setAttribute('x1', x1);
+      bolt.setAttribute('y1', y1);
+      bolt.setAttribute('x2', x1);
+      bolt.setAttribute('y2', y1);
+      bolt.setAttribute('stroke', color);
+      bolt.setAttribute('stroke-width', gsap.utils.random(1.5, 3));
+      bolt.setAttribute('stroke-linecap', 'round');
+      bolt.style.pointerEvents = 'none';
+
+      if (sparkGlowFilter) {
+        bolt.setAttribute('filter', 'url(#spark-glow)');
+      }
+
+      gsap.set(bolt, { opacity: 1 });
+      svg.appendChild(bolt);
+
+      var endX = x1 + Math.cos(angle) * boltLength;
+      var endY = y1 + Math.sin(angle) * boltLength;
+      var duration = gsap.utils.random(0.15, 0.3);
+
+      gsap.to(bolt, {
+        attr: { x2: endX, y2: endY },
+        duration: duration,
+        ease: 'power3.out',
+      });
+
+      gsap.to(bolt, {
+        attr: {
+          x1: endX,
+          y1: endY,
+          x2: endX + Math.cos(angle) * 10,
+          y2: endY + Math.sin(angle) * 10,
+        },
+        opacity: 0,
+        duration: duration * 1.5,
+        delay: duration * 0.8,
+        ease: 'power2.in',
+        onComplete: function () { this.targets()[0].remove(); },
+      });
+    }
   }
 
   // ---- Assembly (Phase 1) ----
@@ -624,6 +767,12 @@
     tl.call(function () {
       var svg = document.querySelector('#LOGO');
       if (svg) spawnBirds(svg, 15);
+    }, [], 'slam+=0.55');
+
+    // 1g: Arcane burst from window at impact
+    tl.call(function () {
+      spawnDuelSparks({ colors: [ELECTRIC_BLUE, PLASMA_PINK], count: 10, battle: true });
+      spawnArcaneBolts({ colors: [ELECTRIC_BLUE, PLASMA_PINK], count: 4 });
     }, [], 'slam+=0.55');
 
     return tl;
