@@ -286,7 +286,8 @@ footer p:last-child {
     padding: 0 1rem;
 }
 
-.testimonials-track:hover {
+/* Pause handled via JS for proper touch/mobile support */
+.testimonials-track.is-paused {
     animation-play-state: paused;
 }
 
@@ -302,10 +303,22 @@ footer p:last-child {
     flex-direction: column;
 }
 
-.testimonial-card:hover {
-    transform: translateY(-6px) scale(1.03);
-    box-shadow: 0 16px 36px rgba(0,0,0,0.35);
-    border-color: rgba(255,255,255,0.4);
+/* Hover effect only on devices with a real pointer (not touch) */
+@media (hover: hover) {
+    .testimonial-card:hover {
+        transform: translateY(-6px) scale(1.03);
+        box-shadow: 0 16px 36px rgba(0,0,0,0.35);
+        border-color: rgba(255,255,255,0.4);
+    }
+}
+
+/* Mobile tap-to-focus: centered + scaled up */
+.testimonial-card.is-focused {
+    transform: scale(1.08);
+    box-shadow: 0 20px 44px rgba(0,0,0,0.45);
+    border-color: rgba(255,255,255,0.5);
+    z-index: 10;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .testimonial-meta {
