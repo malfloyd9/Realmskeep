@@ -94,6 +94,99 @@
     }
 
     track.innerHTML = html;
+
+    // --- Pause/resume: desktop hover + mobile tap-to-focus ---
+    var focusedCard = null;
+    var mobileQuery = window.matchMedia('(max-width: 768px)');
+    var ANIM_DURATION = 120; // must match CSS marquee duration in seconds
+
+    function getTrackX() {
+      var computed = getComputedStyle(track);
+      var matrix = computed.transform || computed.webkitTransform;
+      if (matrix && matrix !== 'none') {
+        var values = matrix.match(/matrix.*\((.+)\)/);
+        if (values) {
+          var parts = values[1].split(', ');
+          return parseFloat(parts[4]) || 0;
+        }
+      }
+      return 0;
+    }
+
+    // Desktop: pause on hover, resume on leave
+    track.addEventListener('mouseenter', function () {
+      if (!mobileQuery.matches) track.classList.add('is-paused');
+    });
+    track.addEventListener('mouseleave', function () {
+      if (!mobileQuery.matches) track.classList.remove('is-paused');
+    });
+
+    // Mobile: tap card to center + scale, tap again to resume
+    track.addEventListener('click', function (e) {
+      if (!mobileQuery.matches) return;
+
+      // If anything is focused, any tap just resumes the carousel
+      if (focusedCard) {
+        unfocusCard();
+        return;
+      }
+
+      var card = e.target.closest('.testimonial-card');
+      if (!card) return;
+
+      focusCard(card);
+    });
+
+    function focusCard(card) {
+      if (focusedCard) {
+        focusedCard.classList.remove('is-focused');
+      }
+
+      var currentX = getTrackX();
+
+      // Freeze track: kill animation, hold at current position
+      track.style.animation = 'none';
+      track.style.transform = 'translateX(' + currentX + 'px)';
+
+      // Calculate offset to center this card in the viewport
+      var cardRect = card.getBoundingClientRect();
+      var viewportCenter = window.innerWidth / 2;
+      var cardCenter = cardRect.left + cardRect.width / 2;
+      var offset = viewportCenter - cardCenter;
+
+      // Force reflow so transition picks up the starting position
+      track.offsetHeight; // eslint-disable-line no-unused-expressions
+
+      // Smooth slide to centered position
+      track.style.transition = 'transform 0.4s ease';
+      track.style.transform = 'translateX(' + (currentX + offset) + 'px)';
+
+      card.classList.add('is-focused');
+      focusedCard = card;
+    }
+
+    function unfocusCard() {
+      if (focusedCard) {
+        focusedCard.classList.remove('is-focused');
+        focusedCard = null;
+      }
+
+      // Read where the track is now (the centered position)
+      var currentX = getTrackX();
+      var halfWidth = track.scrollWidth / 2;
+
+      // Calculate how far through the animation cycle this position is
+      var progress = halfWidth > 0 ? (Math.abs(currentX) / halfWidth) % 1 : 0;
+      var timeOffset = progress * ANIM_DURATION;
+
+      // Clear inline styles and restart animation from current position
+      track.style.transition = '';
+      track.style.transform = '';
+      track.style.animation = 'none';
+      track.offsetHeight; // force reflow to reset animation
+      track.style.animation = '';
+      track.style.animationDelay = '-' + timeOffset.toFixed(2) + 's';
+    }
   }
 
   function init() {
