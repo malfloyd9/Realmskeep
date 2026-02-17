@@ -1,0 +1,341 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="FAQ | Realm's Keep"
+    description="Frequently asked questions about Realm's Keep Gaming Gear — shipping, custom orders, materials, location, and returns."
+>
+    <Fragment slot="head">
+        <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&display=swap" rel="stylesheet">
+    </Fragment>
+    <div class="faq-container" itemscope itemtype="https://schema.org/FAQPage">
+        <header class="scribe-header" aria-label="Scribe's correction">
+            <div class="scribe-line1-wrap" id="scribe-line1-wrap">
+                <span class="scribe-cursive" id="scribe-cursive">
+                    Fletching & Quiver
+                    <span class="scribe-strike" id="scribe-strike" aria-hidden="true"></span>
+                </span>
+                <span class="scribe-faq-title" id="scribe-faq-title">Frequently Asked Questions</span>
+            </div>
+        </header>
+
+        <article class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button type="button" class="faq-question-row" aria-expanded="false" aria-controls="faq-answer-1" id="faq-q-1">
+                <h3 class="faq-question" itemprop="name">Shipping</h3>
+                <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer-wrap" id="faq-answer-1" role="region" aria-labelledby="faq-q-1" hidden>
+                <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <p itemprop="text">Most artifacts are shipped from the Keep within 3-5 business days. Custom-forged items or specialized designs may take longer… You will receive a raven (email) with tracking.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button type="button" class="faq-question-row" aria-expanded="false" aria-controls="faq-answer-2" id="faq-q-2">
+                <h3 class="faq-question" itemprop="name">Custom</h3>
+                <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer-wrap" id="faq-answer-2" role="region" aria-labelledby="faq-q-2" hidden>
+                <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <p itemprop="text">Yes. The Caretaker is always open to discussing unique projects… Use the contact form (coming soon).</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button type="button" class="faq-question-row" aria-expanded="false" aria-controls="faq-answer-3" id="faq-q-3">
+                <h3 class="faq-question" itemprop="name">Materials</h3>
+                <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer-wrap" id="faq-answer-3" role="region" aria-labelledby="faq-q-3" hidden>
+                <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <p itemprop="text">We source only the highest quality materials. Please follow the scribes instructions on care though. Every piece is inspected to ensure it can survive a trek through the most dangerous dungeons.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button type="button" class="faq-question-row" aria-expanded="false" aria-controls="faq-answer-4" id="faq-q-4">
+                <h3 class="faq-question" itemprop="name">Location</h3>
+                <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer-wrap" id="faq-answer-4" role="region" aria-labelledby="faq-q-4" hidden>
+                <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <p itemprop="text">The physical Keep is located in Georgetown, Texas, but our gear travels to adventurers all across the realm.</p>
+                </div>
+            </div>
+        </article>
+
+        <article class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+            <button type="button" class="faq-question-row" aria-expanded="false" aria-controls="faq-answer-5" id="faq-q-5">
+                <h3 class="faq-question" itemprop="name">Returns</h3>
+                <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer-wrap" id="faq-answer-5" role="region" aria-labelledby="faq-q-5" hidden>
+                <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                    <p itemprop="text">If your gear arrives damaged by a stray fireball or rough transit, we will replace it… The shipping companies can be real Ogres.</p>
+                </div>
+            </div>
+        </article>
+    </div>
+
+    <style is:global>
+        /* FAQ page only: deep charcoal background so logo fits the mood */
+        main:has(.faq-container) {
+            background: #0a0a0a;
+            min-height: 100vh;
+        }
+    </style>
+    <style>
+        .faq-container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem 3rem;
+            text-align: center;
+        }
+
+        .scribe-header {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .scribe-line1-wrap {
+            position: relative;
+            display: inline-block;
+            min-width: 28em;
+            text-align: center;
+        }
+
+        .scribe-cursive {
+            font-family: 'Pinyon Script', cursive;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: #000;
+            letter-spacing: 0.02em;
+            display: inline-block;
+            position: relative;
+            z-index: 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .scribe-strike {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) scaleX(0);
+            transform-origin: left center;
+            width: 100%;
+            height: 2px;
+            background: #111;
+            border-radius: 1px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .scribe-faq-title {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            transform: translateX(-50%);
+            font-family: 'Pinyon Script', cursive;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 400;
+            color: #000;
+            letter-spacing: 0.02em;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            opacity: 0;
+            white-space: nowrap;
+        }
+
+        .faq-item {
+            border: 4px solid #333;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(180deg, #222 0%, #111 100%);
+            background-image:
+                url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E"),
+                linear-gradient(180deg, #222 0%, #111 100%);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(255, 215, 0, 0.35);
+        }
+
+        .faq-question-row {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            font: inherit;
+            color: inherit;
+        }
+
+        .faq-question {
+            margin: 0;
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #C0C0C0 !important;
+            letter-spacing: 0.08em;
+            font-variant: small-caps;
+            text-transform: uppercase;
+            transition: color 0.25s ease, text-shadow 0.25s ease;
+        }
+
+        .faq-question-row:hover .faq-question {
+            color: #FFD700;
+            text-shadow: 0 0 12px rgba(255, 215, 0, 0.6), 0 0 24px rgba(255, 215, 0, 0.35);
+        }
+
+        .faq-icon {
+            flex-shrink: 0;
+            width: 1.5rem;
+            height: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 300;
+            color: #C0C0C0;
+            transition: transform 0.35s ease, color 0.25s ease;
+        }
+
+        .faq-question-row:hover .faq-icon {
+            color: #FFD700;
+        }
+
+        .faq-question-row[aria-expanded="true"] .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer-wrap {
+            overflow: hidden;
+            height: 0;
+            box-sizing: border-box;
+        }
+
+        .faq-answer-wrap.is-open {
+            height: auto;
+            overflow: visible;
+        }
+
+        .faq-answer {
+            padding: 1.25rem 1.5rem 1.5rem;
+            box-sizing: border-box;
+        }
+
+        .faq-answer p {
+            margin: 0;
+            padding: 0;
+            border-top: 1px solid #333;
+            padding-top: 1rem;
+            color: #e0e0e0;
+            font-family: 'Lato', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.65;
+            max-width: 100%;
+            white-space: normal;
+        }
+    </style>
+
+    <Fragment slot="scripts">
+        <script is:inline>
+            (function () {
+                if (typeof gsap === 'undefined') return;
+
+                var container = document.querySelector('.faq-container');
+                if (!container) return;
+
+                /* --- Scribe's Correction header animation --- */
+                var cursive = document.getElementById('scribe-cursive');
+                var strike = document.getElementById('scribe-strike');
+                var faqTitle = document.getElementById('scribe-faq-title');
+                if (cursive && strike && faqTitle) {
+                    gsap.set(cursive, { opacity: 0 });
+                    gsap.set(strike, { scaleX: 0, transformOrigin: 'left center' });
+                    gsap.set(faqTitle, { opacity: 0 });
+                    var tl = gsap.timeline();
+                    tl.to(cursive, { opacity: 1, duration: 0.4, ease: 'power1.out' });
+                    tl.to(strike, { scaleX: 1, duration: 0.35, ease: 'power2.inOut' }, '+=1');
+                    tl.to({}, { duration: 2 }); /* 2 second pause */
+                    tl.to(cursive, { opacity: 0, duration: 0.35, ease: 'power2.in' });
+                    tl.to(faqTitle, { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=0.2');
+                }
+
+                var rows = container.querySelectorAll('.faq-question-row');
+                var wraps = container.querySelectorAll('.faq-answer-wrap');
+
+                function closeAllExcept(exceptWrap) {
+                    wraps.forEach(function (wrap) {
+                        if (wrap === exceptWrap) return;
+                        if (!wrap.classList.contains('is-open')) return;
+                        var btn = container.querySelector('[aria-controls="' + wrap.id + '"]');
+                        if (btn) btn.setAttribute('aria-expanded', 'false');
+                        wrap.setAttribute('hidden', '');
+                        wrap.classList.remove('is-open');
+                        gsap.to(wrap, { height: 0, duration: 0.4, ease: 'power2.in', overwrite: true });
+                    });
+                }
+
+                rows.forEach(function (btn) {
+                    btn.addEventListener('click', function () {
+                        var id = btn.getAttribute('aria-controls');
+                        var wrap = id ? document.getElementById(id) : null;
+                        if (!wrap) return;
+
+                        var isOpen = wrap.classList.contains('is-open');
+
+                        closeAllExcept(isOpen ? null : wrap);
+
+                        if (isOpen) {
+                            btn.setAttribute('aria-expanded', 'false');
+                            wrap.style.overflow = 'hidden';
+                            wrap.style.height = wrap.scrollHeight + 'px';
+                            wrap.classList.remove('is-open');
+                            gsap.to(wrap, {
+                                height: 0,
+                                duration: 0.4,
+                                ease: 'power2.in',
+                                overwrite: true,
+                                onComplete: function () {
+                                    wrap.setAttribute('hidden', '');
+                                    wrap.style.overflow = '';
+                                }
+                            });
+                        } else {
+                            btn.setAttribute('aria-expanded', 'true');
+                            wrap.removeAttribute('hidden');
+                            wrap.style.height = '0';
+                            wrap.style.overflow = 'hidden';
+                            wrap.classList.add('is-open');
+                            requestAnimationFrame(function () {
+                                var targetHeight = wrap.scrollHeight;
+                                gsap.to(wrap, {
+                                    height: targetHeight,
+                                    duration: 0.45,
+                                    ease: 'power2.out',
+                                    overwrite: true,
+                                    onComplete: function () {
+                                        wrap.style.height = 'auto';
+                                        wrap.style.overflow = 'visible';
+                                    }
+                                });
+                            });
+                        }
+                    });
+                });
+            })();
+        </script>
+    </Fragment>
+</Layout>

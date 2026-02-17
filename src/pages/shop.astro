@@ -1,0 +1,273 @@
+---
+import Layout from '../layouts/Layout.astro';
+// Background image: place shopkeep.png in public/ (served at /shopkeep.png)
+---
+
+<Layout
+    title="Shop | Realm's Keep"
+    description="Realm's Keep online shop — coming soon."
+>
+    <Fragment slot="head">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+        <style is:global>
+            /* Shop page only: hide header/logo for full-screen retro experience */
+            body:has(.shop-coming-soon) header {
+                display: none;
+            }
+        </style>
+    </Fragment>
+
+    <section class="shop-coming-soon" aria-label="Shop coming soon">
+        <div class="shop-screen">
+            <button
+                type="button"
+                class="shop-mute-btn"
+                id="shop-mute"
+                aria-label="Mute sound"
+                title="Mute sound"
+            >
+                <span class="shop-mute-icon shop-mute-icon--on" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="5" width="3" height="6" fill="currentColor"/>
+                        <rect x="7" y="4" width="2" height="8" fill="currentColor"/>
+                        <rect x="11" y="3" width="2" height="10" fill="currentColor"/>
+                    </svg>
+                </span>
+                <span class="shop-mute-icon shop-mute-icon--off" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="3" height="12" fill="currentColor"/>
+                        <rect x="6" y="4" width="2" height="8" fill="currentColor"/>
+                        <line x1="2" y1="2" x2="14" y2="14" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="shop-screen-inner">
+                <div class="shop-background-wrap" id="shop-bg">
+                    <img
+                        src="/shopkeep.png"
+                        alt="Realm's Keep 8-bit shopkeeper scene"
+                        class="shop-background-img"
+                        width="640"
+                        height="360"
+                    />
+                </div>
+                <div class="shop-text-bubble" id="shop-bubble">
+                    <p class="shop-bubble-text" id="shop-message" aria-live="polite"></p>
+                    <span class="shop-bubble-arrow" id="shop-arrow" aria-hidden="true">▼</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .shop-coming-soon {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: #1a1a2e;
+        }
+
+        .shop-screen {
+            position: relative;
+            width: 95vw;
+            max-width: 1200px;
+            margin: 0 auto;
+            border: 4px solid #0a0a0a;
+            border-radius: 0;
+            overflow: hidden;
+            box-shadow:
+                0 0 0 4px #2d2d2d,
+                0 0 0 8px #0a0a0a,
+                inset 0 0 60px rgba(0, 0, 0, 0.5),
+                0 20px 40px rgba(0, 0, 0, 0.6);
+            background: #0a0a0a;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .shop-mute-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            z-index: 5;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border: 2px solid #0a0a0a;
+            border-radius: 0;
+            background: #fff;
+            color: #0a0a0a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 2px 2px 0 #0a0a0a;
+            transition: background 0.15s ease, color 0.15s ease;
+        }
+        .shop-mute-btn:hover {
+            background: #e0e0e0;
+        }
+        .shop-mute-btn:focus {
+            outline: 2px solid #0a0a0a;
+            outline-offset: 2px;
+        }
+        .shop-mute-btn[aria-pressed="true"] .shop-mute-icon--on { display: none; }
+        .shop-mute-btn[aria-pressed="true"] .shop-mute-icon--off { display: block !important; }
+        .shop-mute-btn .shop-mute-icon--off { display: none; }
+        .shop-mute-icon svg { display: block; }
+
+        .shop-screen-inner {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: #1a1a2e;
+        }
+
+        .shop-background-wrap {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 100%;
+            aspect-ratio: 16 / 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 4px solid #0a0a0a;
+            background: #2a2a4a;
+            opacity: 1;
+        }
+
+        .shop-background-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .shop-text-bubble {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 100%;
+            padding: 1rem 1.25rem;
+            background: #fff;
+            border: 4px solid #0a0a0a;
+            border-radius: 0;
+            box-shadow: 4px 4px 0 #0a0a0a;
+            font-family: 'Press Start 2P', cursive;
+            font-size: clamp(0.5rem, 2.5vw, 0.65rem);
+            line-height: 1.8;
+            color: #000000;
+            min-height: 4em;
+        }
+
+        .shop-bubble-text {
+            margin: 0;
+            min-height: 1.8em;
+            color: #000000;
+        }
+
+        .shop-bubble-arrow {
+            display: block;
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.6em;
+            opacity: 0;
+        }
+
+        @media (max-width: 480px) {
+            .shop-text-bubble {
+                font-size: 0.5rem;
+            }
+        }
+    </style>
+
+    <script define:vars={{ message: "WELCOME TO THE KEEP... ONLINE SHOP COMING SOON! CHECK US OUT ON ETSY! LINKS ON THE HOME PAGE! SEE YOU AROUND THE REALM!" }}>
+        function runShopAnimation() {
+            if (typeof gsap === 'undefined') return;
+
+            const bg = document.getElementById('shop-bg');
+            const bubbleText = document.getElementById('shop-message');
+            const arrow = document.getElementById('shop-arrow');
+            const muteBtn = document.getElementById('shop-mute');
+            if (!bg || !bubbleText || !arrow) return;
+
+            const fullMessage = typeof message !== 'undefined' ? message : "WELCOME TO THE KEEP... ONLINE SHOP COMING SOON!";
+
+            // --- Bleep foundation: play a short sound on each character (optional) ---
+            // Set BLEEP_SRC to your asset path when you add sound, e.g. '/click.mp3' or '/blip.wav'
+            // const BLEEP_SRC = '/click.mp3';
+            // const BLEEP_SRC = '/blip.wav';
+            let bleepAudio = null; // optional: new Audio(BLEEP_SRC) when BLEEP_SRC is set
+            let shopMuted = false;
+
+            function playBleep() {
+                if (shopMuted) return;
+                if (!bleepAudio) return;
+                try {
+                    bleepAudio.currentTime = 0;
+                    bleepAudio.play().catch(function () {});
+                } catch (e) {}
+            }
+
+            if (muteBtn) {
+                muteBtn.setAttribute('aria-pressed', 'false');
+                muteBtn.addEventListener('click', function () {
+                    shopMuted = !shopMuted;
+                    muteBtn.setAttribute('aria-pressed', shopMuted ? 'true' : 'false');
+                    muteBtn.setAttribute('aria-label', shopMuted ? 'Unmute sound' : 'Mute sound');
+                    muteBtn.setAttribute('title', shopMuted ? 'Unmute sound' : 'Mute sound');
+                });
+            }
+
+            // Image is visible instantly via CSS (opacity: 1). Timeline starts with typewriter.
+            const tl = gsap.timeline();
+
+            // Type out message — 0.07s per character (sweet spot for RPG dialogue)
+            const CHAR_DELAY = 0.07;
+            const chars = fullMessage.split('');
+            bubbleText.textContent = '';
+            chars.forEach(function (char, i) {
+                tl.call(
+                    (function (idx) {
+                        return function () {
+                            bubbleText.textContent += fullMessage[idx];
+                            playBleep();
+                        };
+                    })(i),
+                    null,
+                    i * CHAR_DELAY
+                );
+            });
+
+            // Blinking arrow
+            tl.set(arrow, { opacity: 1 }, '-=0.2');
+            tl.to(arrow, {
+                opacity: 0,
+                duration: 0.5,
+                repeat: -1,
+                yoyo: true,
+                ease: 'power1.inOut'
+            });
+        }
+
+        if (document.readyState === 'complete') {
+            runShopAnimation();
+        } else {
+            window.addEventListener('load', runShopAnimation);
+        }
+    </script>
+</Layout>

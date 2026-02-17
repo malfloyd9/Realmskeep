@@ -1,0 +1,13 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "astro:content": ["./.astro/types.d.ts"]
+    },
+    "jsx": "preserve",
+    "jsxImportSource": "astro"
+  }
+}

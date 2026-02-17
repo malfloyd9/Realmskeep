@@ -1,0 +1,338 @@
+---
+import { Fragment } from 'astro/jsx-runtime';
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+    const lorePosts = await getCollection('lore');
+    return lorePosts.map((post) => ({
+        params: { slug: post.slug },
+        props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Build JSON-LD schema for BlogPosting
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.data.title,
+    "description": post.data.metaDescription || post.data.description,
+    "author": {
+        "@type": "Person",
+        "name": post.data.author
+    },
+    "datePublished": post.data.pubDate.toISOString(),
+    "dateModified": post.data.pubDate.toISOString(),
+    "publisher": {
+        "@type": "Organization",
+        "name": "Realm's Keep Gaming Gear"
+    },
+    "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": post.data.canonicalURL || `https://realmskeep.com/lore/${post.slug}`
+    }
+};
+
+// Format date for display
+const formattedDate = post.data.pubDate.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+});
+---
+
+<Layout 
+    title={`${post.data.title} | Realm's Keep Lore`}
+    description={post.data.metaDescription || post.data.description}
+    canonicalURL={post.data.canonicalURL}
+>
+    <Fragment slot="head">
+        <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    </Fragment>
+
+    <section class="lore-post-section">
+        <div class="container">
+            <nav class="lore-nav">
+                <a href="/lore" class="back-link">← Back to Lore Archive</a>
+            </nav>
+
+            <article class="lore-post">
+                <header class="lore-post-header">
+                    <h1 class="lore-post-title">{post.data.title}</h1>
+                    <div class="lore-post-meta">
+                        <div class="lore-post-author">
+                            <span class="meta-label">By</span>
+                            <span class="meta-value">{post.data.author}</span>
+                        </div>
+                        <time class="lore-post-date" datetime={post.data.pubDate.toISOString()}>
+                            <span class="meta-label">Published</span>
+                            <span class="meta-value">{formattedDate}</span>
+                        </time>
+                    </div>
+                    {post.data.tags && post.data.tags.length > 0 && (
+                        <div class="lore-post-tags">
+                            {post.data.tags.map((tag) => (
+                                <span class="tag">{tag}</span>
+                            ))}
+                        </div>
+                    )}
+                </header>
+
+                <div class="lore-post-content">
+                    <Content />
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <style>
+        body {
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        header {
+            background: var(--black);
+            border-bottom-color: rgba(255,255,255,0.2);
+        }
+
+        #LOGO path,
+        #LOGO rect {
+            fill: var(--white);
+        }
+
+        .lore-post-section {
+            padding: 3rem 0 5rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .lore-nav {
+            margin-bottom: 3rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1rem;
+            opacity: 0.9;
+            transition: opacity var(--transition-speed) ease, transform var(--transition-speed) ease;
+            padding: 0.5rem 0;
+        }
+
+        .back-link:hover,
+        .back-link:focus {
+            opacity: 1;
+            transform: translateX(-4px);
+        }
+
+        .lore-post {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 3rem;
+            backdrop-filter: blur(2px);
+        }
+
+        .lore-post-header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .lore-post-title {
+            font-family: var(--primary-font);
+            font-size: 2.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--white);
+            text-transform: none;
+            letter-spacing: 1px;
+        }
+
+        .lore-post-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .lore-post-author,
+        .lore-post-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-label {
+            opacity: 0.7;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .meta-value {
+            opacity: 0.95;
+            font-weight: 500;
+        }
+
+        .lore-post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            font-size: 0.68rem;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.85);
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            border-radius: 999px;
+            padding: 0.3rem 0.7rem;
+            line-height: 1.2;
+        }
+
+        .lore-post-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: rgba(255,255,255,0.95);
+        }
+
+        .lore-post-content :global(h2) {
+            font-family: var(--primary-font);
+            font-size: 2rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lore-post-content :global(h3) {
+            font-family: var(--primary-font);
+            font-size: 1.5rem;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lore-post-content :global(p) {
+            margin-bottom: 1.25rem;
+            color: rgba(255,255,255,0.95);
+        }
+
+        .lore-post-content :global(strong) {
+            color: var(--white);
+            font-weight: 700;
+        }
+
+        .lore-post-content :global(a) {
+            color: #f4c542;
+            text-decoration: underline;
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .lore-post-content :global(a:hover),
+        .lore-post-content :global(a:focus) {
+            opacity: 0.8;
+        }
+
+        .lore-post-content :global(ul),
+        .lore-post-content :global(ol) {
+            margin-left: 1.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .lore-post-content :global(li) {
+            margin-bottom: 0.5rem;
+            color: rgba(255,255,255,0.95);
+        }
+
+        .lore-post-content :global(blockquote) {
+            border-left: 3px solid rgba(255,255,255,0.3);
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            opacity: 0.9;
+        }
+
+        .lore-post-content :global(code) {
+            background: rgba(255,255,255,0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-size: 0.9em;
+            color: var(--white);
+        }
+
+        .lore-post-content :global(pre) {
+            background: rgba(0,0,0,0.3);
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1.25rem 0;
+        }
+
+        .lore-post-content :global(pre code) {
+            background: transparent;
+            padding: 0;
+        }
+
+        @media (max-width: 768px) {
+            .lore-post {
+                padding: 2rem 1.5rem;
+            }
+
+            .lore-post-title {
+                font-size: 2rem;
+            }
+
+            .lore-post-content {
+                font-size: 1rem;
+            }
+
+            .lore-post-content :global(h2) {
+                font-size: 1.75rem;
+            }
+
+            .lore-post-content :global(h3) {
+                font-size: 1.35rem;
+            }
+
+            .lore-post-meta {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .lore-post-section {
+                padding: 2rem 0 4rem;
+            }
+
+            .lore-post {
+                padding: 1.5rem 1rem;
+            }
+
+            .lore-post-title {
+                font-size: 1.75rem;
+            }
+
+            .lore-post-header {
+                margin-bottom: 2rem;
+                padding-bottom: 1.5rem;
+            }
+        }
+    </style>
+</Layout>
