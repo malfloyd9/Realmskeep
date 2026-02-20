@@ -1,0 +1,97 @@
+---
+import { getCollection } from 'astro:content';
+import { getImage } from 'astro:assets';
+import Layout from '../layouts/Layout.astro';
+
+const galleryItems = await getCollection('gallery');
+
+// Process images for items that have them
+const processedItems = await Promise.all(
+    galleryItems.map(async (item) => {
+        let optimizedImage = null;
+        if (item.data.image) {
+            optimizedImage = await getImage({ 
+                src: item.data.image, 
+                alt: item.data.alt || item.data.title 
+            });
+        }
+        return { ...item, optimizedImage };
+    })
+);
+---
+
+<Layout 
+    title="Gallery | Realm's Keep"
+    description="Explore our collection of handcrafted gaming gear and accessories from Realm's Keep."
+    canonicalURL="https://realmskeep.com/gallery"
+>
+    <section class="gallery-section" style="min-height: calc(100vh - 200px); padding: 4rem 0;">
+        <div class="container">
+            <h2 class="section-title">Gallery</h2>
+            <p style="text-align: center; margin-bottom: 3rem; opacity: 0.9; font-size: 1.1rem;">
+                Showcase of our handcrafted gaming gear
+            </p>
+            
+            {processedItems.length === 0 ? (
+                <div style="text-align: center; padding: 3rem 0;">
+                    <p style="opacity: 0.7; margin-bottom: 1rem;">Gallery coming soon!</p>
+                    <p style="opacity: 0.6; font-size: 0.95rem;">Check out our <a href="/shop" style="color: #d4af37; text-decoration: underline;">shop</a> in the meantime.</p>
+                </div>
+            ) : (
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                    {processedItems.map((item) => (
+                        <article class="gallery-item" style="
+                            background: rgba(255,255,255,0.06);
+                            border: 1px solid rgba(255,255,255,0.2);
+                            border-radius: 10px;
+                            overflow: hidden;
+                            backdrop-filter: blur(2px);
+                            transition: transform var(--transition-speed) ease, 
+                                        box-shadow var(--transition-speed) ease;
+                        ">
+                            {item.optimizedImage && (
+                                <img 
+                                    src={item.optimizedImage.src}
+                                    srcset={item.optimizedImage.srcset}
+                                    alt={item.data.alt || item.data.title}
+                                    style="width: 100%; height: auto; display: block;"
+                                />
+                            )}
+                            <div style="padding: 1.5rem;">
+                                <h3 style="
+                                    font-family: var(--primary-font);
+                                    font-size: 1.25rem;
+                                    margin-bottom: 0.5rem;
+                                    text-transform: uppercase;
+                                    letter-spacing: 1px;
+                                    color: var(--white);
+                                ">{item.data.title}</h3>
+                                {item.data.category && (
+                                    <span style="
+                                        font-size: 0.75rem;
+                                        letter-spacing: 1px;
+                                        text-transform: uppercase;
+                                        color: rgba(255,255,255,0.7);
+                                    ">{item.data.category}</span>
+                                )}
+                            </div>
+                        </article>
+                    ))}
+                </div>
+            )}
+        </div>
+    </section>
+
+    <style>
+        .gallery-item:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 16px 36px rgba(0,0,0,0.35);
+        }
+
+        @media (max-width: 768px) {
+            .gallery-section {
+                padding: 2rem 0;
+            }
+        }
+    </style>
+</Layout>

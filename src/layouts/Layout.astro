@@ -29,12 +29,13 @@ const { title, description, canonicalURL, children } = Astro.props;
     <slot name="head" />
 </head>
 <body>
-    <header>
+    <header class="masthead">
         <div class="container">
-            <div class="logo-section">
-                <div class="logo-container" data-hero-logo-area>
-                    <a href="/" data-hero-logo-trigger>
-                        <svg id="LOGO" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" aria-label="Realm's Keep Logo" data-pin-nopin="true">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-container" data-hero-logo-area>
+                        <a href="/" data-hero-logo-trigger>
+                            <svg id="LOGO" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" aria-label="Realm's Keep Logo" data-pin-nopin="true">
                         <g id="GAMING_GEAR" data-name="GAMING GEAR">
                             <g id="GEAR">
                                 <path id="letter_R" data-name="letter R" d="M386.54,429.06l-15.88-11.46c3.81,6.09,6.75,9.41,11.15,15.01l-6.01,4.64-25.4-31.29c-.83-1.03-3.28-2.29-4.57-3.38l10.02-7.9c2.18-1.72,7.11-2.62,9.76-1.2,6.86,3.68,10.95,10.32,10.55,18.26l16.09,12.4-5.72,4.92ZM360.97,398.72c-1.28-.74-4.41.1-5.32,1.22l11.92,14.71c5.8-4.95-1.43-12.92-6.59-15.93Z"/>
@@ -81,212 +82,345 @@ const { title, description, canonicalURL, children } = Astro.props;
                             </g>
                         </g>
                     </svg>
-                    </a>
+                        </a>
+                    </div>
                 </div>
+                
+                <nav class="main-nav" aria-label="Main navigation">
+                    <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div class="nav-links">
+                        <a href="/" class="nav-link">Home</a>
+                        <a href="/lore" class="nav-link">Lore</a>
+                        <a href="/gallery" class="nav-link">Gallery</a>
+                        <a href="/shop" class="nav-link">Shop</a>
+                        <a href="/faq" class="nav-link">FAQ</a>
+                    </div>
+                </nav>
             </div>
         </div>
     </header>
 
-    <nav class="main-nav" aria-label="Main navigation">
-        <div class="container">
-            <a href="/" class="nav-link">Home</a>
-            <a href="/lore" class="nav-link">Lore</a>
-            <a href="/gallery" class="nav-link">Gallery</a>
-            <a href="/shop" class="nav-link">Shop</a>
-            <a href="/faq" class="nav-link">FAQ</a>
-        </div>
-    </nav>
-
     <style is:global>
-        header .container {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            text-align: center;
+        /* Header - NOT fixed, scrolls with page */
+        .masthead {
+            position: relative;
+            background: var(--white);
+            border-bottom: 4px double var(--black);
         }
 
-        header .logo-section {
-            width: 100%;
+        body {
+            padding-top: 0 !important;
+        }
+
+        /* Ensure main content is visible and starts below header */
+        main {
+            display: block !important;
+            position: relative !important;
+            width: 100% !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+            z-index: 1 !important;
+        }
+
+        /* Ensure hero section and all sections are visible */
+        .hero,
+        section {
+            position: relative !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .masthead .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .header-content {
+            display: grid !important;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center !important;
+            gap: 2rem;
+            padding: 1rem 0;
+            width: 100% !important;
+        }
+
+        .logo-section {
+            grid-column: 2;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 1rem 0;
         }
 
-        header .logo-container {
-            margin: 0 auto;
+        .logo-container {
+            margin: 0;
             text-align: center;
             display: flex;
             justify-content: center;
-            width: 100%;
-            max-width: 500px;
+            max-width: 300px;
         }
 
-        header .logo-container a {
+        .logo-container a {
             display: inline-block;
-            margin: 0 auto;
             width: 100%;
-            max-width: 500px;
+            max-width: 300px;
         }
 
-        header .logo-container svg {
+        .logo-container svg {
             width: 100%;
-            max-width: 500px;
+            max-width: 300px;
             height: auto;
             display: block;
             visibility: visible !important;
         }
 
-        /* TEMPORARY: Force logo visibility - brand-ident.js will control animations */
-        /* The script sets #LOGO to opacity: 1 during assembly animation */
-        header .logo-container svg#LOGO {
+        .logo-container svg#LOGO {
             opacity: 1 !important;
             visibility: visible !important;
         }
 
+        /* Navigation */
         .main-nav {
-            background: #2a2a2a;
-            border-bottom: 2px solid var(--black);
-            padding: 1rem 0;
-            width: 100%;
-        }
-
-        .main-nav .container {
-            display: grid !important;
-            grid-template-columns: repeat(5, 1fr) !important;
+            grid-column: 3;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
             visibility: visible !important;
             opacity: 1 !important;
-            gap: 1rem;
-            justify-items: center;
-            align-items: center;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 0 1rem;
         }
 
-        .main-nav .nav-link {
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 1001;
+        }
+
+        .mobile-menu-toggle span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--black);
+            transition: all var(--transition-speed) ease;
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        .nav-links {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 1rem;
+            align-items: center;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            transform: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            list-style: none;
+        }
+
+        .nav-link {
             font-family: 'Cinzel', serif !important;
-            font-size: 1rem !important;
+            font-size: 0.95rem !important;
             font-weight: 500 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
-            color: #E5E5E5 !important;
-            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2) !important;
+            color: var(--white) !important;
+            background: var(--black) !important;
             text-decoration: none !important;
             position: relative;
             transition: all var(--transition-speed) ease;
-            background: #000000 !important;
-            border: 1px solid #4a4a4a !important;
-            border-radius: 4px;
-            padding: 0.7rem 1rem !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            padding: 0.5rem 1rem !important;
+            white-space: nowrap;
             display: inline-block !important;
-            cursor: pointer;
-            min-width: 100px;
-            width: 100%;
-            max-width: 120px;
-            text-align: center;
             visibility: visible !important;
             opacity: 1 !important;
+            border: 2px solid var(--black) !important;
         }
 
-        .main-nav .nav-link::before {
+        .nav-link::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
             bottom: 0;
-            background: rgba(212, 175, 55, 0.1);
-            border-radius: 4px;
-            opacity: 0;
-            transition: opacity var(--transition-speed) ease;
-            z-index: -1;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: #d4af37;
+            transition: width var(--transition-speed) ease;
         }
 
-        .main-nav .nav-link:hover,
-        .main-nav .nav-link:focus {
+        .nav-link:hover,
+        .nav-link:focus {
             color: #d4af37 !important;
-            text-shadow: 0 0 8px rgba(212, 175, 55, 0.6), 0 0 15px rgba(212, 175, 55, 0.4) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.6), 0 0 15px rgba(212, 175, 55, 0.4) !important;
-            border-color: #d4af37 !important;
-            background: rgba(255, 255, 255, 0.05) !important;
+            background: var(--black) !important;
+            border-color: var(--black) !important;
         }
 
-        .main-nav .nav-link:hover::before,
-        .main-nav .nav-link:focus::before {
-            opacity: 1;
+        .nav-link:hover::after,
+        .nav-link:focus::after {
+            width: 80%;
         }
 
-        .main-nav .nav-link:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.5) !important;
-        }
-
-        /* Active state - highlight current page */
-        .main-nav .nav-link[aria-current="page"],
-        .main-nav .nav-link.active {
+        .nav-link[aria-current="page"],
+        .nav-link.active {
             color: #d4af37 !important;
-            text-shadow: 0 0 6px rgba(212, 175, 55, 0.5) !important;
-            background: rgba(255, 255, 255, 0.05) !important;
-            border-color: #d4af37 !important;
-            box-shadow: 0 3px 12px rgba(212, 175, 55, 0.5) !important;
+            background: var(--black) !important;
         }
 
+        .nav-link[aria-current="page"]::after,
+        .nav-link.active::after {
+            width: 80%;
+        }
+
+        /* Mobile styles - ONLY apply on mobile */
         @media (max-width: 768px) {
-            .main-nav .container {
-                grid-template-columns: repeat(5, 1fr) !important;
-                gap: 0.75rem;
-                max-width: 100%;
-                padding: 0 0.5rem;
+            .header-content {
+                grid-template-columns: auto 1fr auto;
+                gap: 1rem;
+                padding: 0.75rem 0;
+            }
+            
+            .logo-section {
+                grid-column: 2;
+            }
+            
+            .main-nav {
+                grid-column: 3;
             }
 
-            .main-nav .nav-link {
-                font-size: 0.85rem !important;
-                padding: 0.6rem 0.8rem !important;
-                min-width: 70px;
-                max-width: 100px;
-                letter-spacing: 1.5px !important;
+            .logo-container {
+                max-width: 200px;
+            }
+
+            .logo-container svg {
+                max-width: 200px;
+            }
+
+            .mobile-menu-toggle {
+                display: flex !important;
+            }
+
+            /* On mobile, nav-links becomes a full-screen overlay */
+            .nav-links {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                background: rgba(255, 255, 255, 0.98) !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                gap: 2rem !important;
+                transform: translateX(100%) !important;
+                transition: transform var(--transition-speed) ease !important;
+                z-index: 1002 !important;
+                padding: 2rem !important;
+            }
+
+            .nav-links.is-open {
+                transform: translateX(0) !important;
+            }
+
+            .nav-link {
+                font-size: 1.25rem !important;
+                padding: 1rem 2rem !important;
+                width: auto;
+            }
+
+            .nav-link::after {
+                display: none;
             }
         }
-
-        @media (max-width: 600px) {
-            .main-nav .container {
-                grid-template-columns: repeat(5, 1fr) !important;
-                gap: 0.5rem;
-                padding: 0 0.5rem;
+        
+        /* Desktop: Ensure nav is visible and inline */
+        @media (min-width: 769px) {
+            .nav-links {
+                position: relative !important;
+                transform: none !important;
+                background: transparent !important;
+                flex-direction: row !important;
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                bottom: auto !important;
+                padding: 0 !important;
+                display: flex !important;
             }
-
-            .main-nav .nav-link {
-                font-size: 0.75rem !important;
-                padding: 0.55rem 0.7rem !important;
-                min-width: 60px;
-                max-width: 90px;
-                letter-spacing: 1px !important;
+            
+            .mobile-menu-toggle {
+                display: none !important;
             }
         }
 
         @media (max-width: 480px) {
-            .main-nav .container {
-                grid-template-columns: 1fr !important;
-                width: 100%;
-                gap: 0.75rem;
-                max-width: 100%;
+            .logo-container {
+                max-width: 150px;
             }
 
-            .main-nav .nav-link {
-                width: 100%;
-                max-width: 200px;
-                text-align: center;
-                font-size: 0.85rem !important;
-                padding: 0.6rem 1rem !important;
-                min-width: auto;
+            .logo-container svg {
+                max-width: 150px;
+            }
+
+            .header-content {
+                padding: 0.5rem 0;
+                gap: 1rem;
             }
         }
     </style>
+
+    <script is:inline>
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            
+            if (toggle && navLinks) {
+                toggle.addEventListener('click', function() {
+                    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                    toggle.setAttribute('aria-expanded', !isExpanded);
+                    navLinks.classList.toggle('is-open');
+                });
+
+                // Close menu when clicking a link
+                navLinks.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', function() {
+                        toggle.setAttribute('aria-expanded', 'false');
+                        navLinks.classList.remove('is-open');
+                    });
+                });
+
+                // Close menu on escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && navLinks.classList.contains('is-open')) {
+                        toggle.setAttribute('aria-expanded', 'false');
+                        navLinks.classList.remove('is-open');
+                    }
+                });
+            }
+        });
+    </script>
 
     <main>
         <slot />
