@@ -6,7 +6,7 @@ import Layout from '../../layouts/Layout.astro';
 export async function getStaticPaths() {
     const lorePosts = await getCollection('lore');
     return lorePosts.map((post) => ({
-        params: { slug: post.slug },
+        params: { slug: post.id },
         props: { post },
     }));
 }

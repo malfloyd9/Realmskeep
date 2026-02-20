@@ -1,0 +1,7 @@
+# Realm's Keep — Astro build for Netlify (repo root = Astro project)
+[build]
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
