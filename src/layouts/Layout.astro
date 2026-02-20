@@ -32,6 +32,13 @@ const { title, description, canonicalURL, children } = Astro.props;
     <header class="masthead">
         <div class="container">
             <div class="header-content">
+                <nav class="nav-left" aria-label="Left navigation">
+                    <div class="nav-links">
+                        <a href="/" class="nav-link">Home</a>
+                        <a href="/lore" class="nav-link">Lore</a>
+                    </div>
+                </nav>
+                
                 <div class="logo-section">
                     <div class="logo-container" data-hero-logo-area>
                         <a href="/" data-hero-logo-trigger>
@@ -86,16 +93,13 @@ const { title, description, canonicalURL, children } = Astro.props;
                     </div>
                 </div>
                 
-                <nav class="main-nav" aria-label="Main navigation">
+                <nav class="nav-right" aria-label="Right navigation">
                     <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
                         <span></span>
                         <span></span>
                         <span></span>
                     </button>
                     <div class="nav-links">
-                        <a href="/" class="nav-link">Home</a>
-                        <a href="/lore" class="nav-link">Lore</a>
-                        <a href="/gallery" class="nav-link">Gallery</a>
                         <a href="/shop" class="nav-link">Shop</a>
                         <a href="/faq" class="nav-link">FAQ</a>
                     </div>
@@ -143,11 +147,18 @@ const { title, description, canonicalURL, children } = Astro.props;
 
         .header-content {
             display: grid !important;
-            grid-template-columns: 1fr auto 1fr;
+            grid-template-columns: auto 1fr auto;
             align-items: center !important;
-            gap: 2rem;
+            gap: 3rem;
             padding: 1rem 0;
             width: 100% !important;
+        }
+
+        .nav-left {
+            grid-column: 1;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
         }
 
         .logo-section {
@@ -155,6 +166,13 @@ const { title, description, canonicalURL, children } = Astro.props;
             display: flex;
             justify-content: center;
             align-items: center;
+            position: relative;
+        }
+        
+        /* Align nav buttons so their tops align with logo center */
+        .nav-left,
+        .nav-right {
+            align-items: flex-start !important;
         }
 
         .logo-container {
@@ -185,13 +203,36 @@ const { title, description, canonicalURL, children } = Astro.props;
         }
 
         /* Navigation */
-        .main-nav {
+        .nav-right {
             grid-column: 3;
             display: flex !important;
             align-items: center !important;
             justify-content: flex-end !important;
             visibility: visible !important;
             opacity: 1 !important;
+        }
+        
+        .nav-left .nav-links,
+        .nav-right .nav-links {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 1rem;
+            align-items: flex-start !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            position: relative !important;
+            transform: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+            list-style: none;
+            margin-top: calc(150px - 0.75rem) !important; /* Logo center (150px) minus button top padding */
+        }
+        
+        @media (min-width: 769px) {
+            .nav-left .nav-links,
+            .nav-right .nav-links {
+                margin-top: calc(150px - 0.75rem) !important;
+            }
         }
 
         .mobile-menu-toggle {
@@ -225,23 +266,10 @@ const { title, description, canonicalURL, children } = Astro.props;
             transform: rotate(-45deg) translate(6px, -6px);
         }
 
-        .nav-links {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 1rem;
-            align-items: center;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: relative !important;
-            transform: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-            list-style: none;
-        }
 
         .nav-link {
             font-family: 'Cinzel', serif !important;
-            font-size: 0.95rem !important;
+            font-size: 1.2rem !important;
             font-weight: 500 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
@@ -250,12 +278,22 @@ const { title, description, canonicalURL, children } = Astro.props;
             text-decoration: none !important;
             position: relative;
             transition: all var(--transition-speed) ease;
-            padding: 0.5rem 1rem !important;
+            padding: 0.75rem 1.5rem !important;
             white-space: nowrap;
             display: inline-block !important;
             visibility: visible !important;
             opacity: 1 !important;
             border: 2px solid var(--black) !important;
+            border-top: 2px solid rgba(255, 255, 255, 0.2) !important;
+            border-left: 2px solid rgba(255, 255, 255, 0.2) !important;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.5) !important;
+            border-right: 2px solid rgba(0, 0, 0, 0.5) !important;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4),
+                        0 3px 6px rgba(0, 0, 0, 0.3),
+                        inset 0 2px 4px rgba(255, 255, 255, 0.15),
+                        inset 0 -2px 4px rgba(0, 0, 0, 0.5) !important;
+            transform: translateY(0);
+            border-radius: 4px;
         }
 
         .nav-link::after {
@@ -274,7 +312,27 @@ const { title, description, canonicalURL, children } = Astro.props;
         .nav-link:focus {
             color: #d4af37 !important;
             background: var(--black) !important;
-            border-color: var(--black) !important;
+            border-top: 2px solid rgba(255, 255, 255, 0.3) !important;
+            border-left: 2px solid rgba(255, 255, 255, 0.3) !important;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.6) !important;
+            border-right: 2px solid rgba(0, 0, 0, 0.6) !important;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5),
+                        0 4px 8px rgba(0, 0, 0, 0.4),
+                        inset 0 2px 4px rgba(255, 255, 255, 0.2),
+                        inset 0 -2px 4px rgba(0, 0, 0, 0.6),
+                        0 0 12px rgba(212, 175, 55, 0.3) !important;
+            transform: translateY(-3px);
+        }
+        
+        .nav-link:active {
+            transform: translateY(0px);
+            border-top: 2px solid rgba(0, 0, 0, 0.5) !important;
+            border-left: 2px solid rgba(0, 0, 0, 0.5) !important;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
+            border-right: 2px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4),
+                        inset 0 3px 6px rgba(0, 0, 0, 0.5),
+                        inset 0 -1px 2px rgba(255, 255, 255, 0.1) !important;
         }
 
         .nav-link:hover::after,
@@ -301,11 +359,15 @@ const { title, description, canonicalURL, children } = Astro.props;
                 padding: 0.75rem 0;
             }
             
+            .nav-left {
+                display: none !important;
+            }
+            
             .logo-section {
                 grid-column: 2;
             }
             
-            .main-nav {
+            .nav-right {
                 grid-column: 3;
             }
 
@@ -321,26 +383,30 @@ const { title, description, canonicalURL, children } = Astro.props;
                 display: flex !important;
             }
 
-            /* On mobile, nav-links becomes a full-screen overlay */
-            .nav-links {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                background: rgba(255, 255, 255, 0.98) !important;
-                flex-direction: column !important;
-                justify-content: center !important;
-                align-items: center !important;
-                gap: 2rem !important;
-                transform: translateX(100%) !important;
-                transition: transform var(--transition-speed) ease !important;
-                z-index: 1002 !important;
-                padding: 2rem !important;
+            /* On mobile, hide desktop nav links */
+            .nav-left .nav-links,
+            .nav-right .nav-links {
+                display: none !important;
+                margin-top: 0 !important;
             }
-
-            .nav-links.is-open {
-                transform: translateX(0) !important;
+            
+            /* Mobile menu created by JS */
+            .mobile-menu {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(255, 255, 255, 0.98);
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 2rem;
+                z-index: 1002;
+                padding: 2rem;
+                transform: translateX(100%);
+                transition: transform var(--transition-speed) ease;
             }
 
             .nav-link {
@@ -356,7 +422,8 @@ const { title, description, canonicalURL, children } = Astro.props;
         
         /* Desktop: Ensure nav is visible and inline */
         @media (min-width: 769px) {
-            .nav-links {
+            .nav-left .nav-links,
+            .nav-right .nav-links {
                 position: relative !important;
                 transform: none !important;
                 background: transparent !important;
@@ -367,6 +434,7 @@ const { title, description, canonicalURL, children } = Astro.props;
                 bottom: auto !important;
                 padding: 0 !important;
                 display: flex !important;
+                margin-top: calc(150px - 0.75rem) !important;
             }
             
             .mobile-menu-toggle {
@@ -394,28 +462,57 @@ const { title, description, canonicalURL, children } = Astro.props;
         // Mobile menu toggle
         document.addEventListener('DOMContentLoaded', function() {
             const toggle = document.querySelector('.mobile-menu-toggle');
-            const navLinks = document.querySelector('.nav-links');
+            const navRight = document.querySelector('.nav-right .nav-links');
+            const navLeft = document.querySelector('.nav-left .nav-links');
             
-            if (toggle && navLinks) {
+            if (toggle) {
+                // Create mobile menu container
+                const mobileMenu = document.createElement('div');
+                mobileMenu.className = 'nav-links mobile-menu';
+                
+                // Combine all nav links for mobile
+                if (navLeft) {
+                    navLeft.querySelectorAll('.nav-link').forEach(link => {
+                        const clone = link.cloneNode(true);
+                        mobileMenu.appendChild(clone);
+                    });
+                }
+                if (navRight) {
+                    navRight.querySelectorAll('.nav-link').forEach(link => {
+                        const clone = link.cloneNode(true);
+                        mobileMenu.appendChild(clone);
+                    });
+                }
+                
+                document.body.appendChild(mobileMenu);
+                
                 toggle.addEventListener('click', function() {
                     const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
                     toggle.setAttribute('aria-expanded', !isExpanded);
-                    navLinks.classList.toggle('is-open');
+                    if (isExpanded) {
+                        mobileMenu.style.display = 'none';
+                        mobileMenu.style.transform = 'translateX(100%)';
+                    } else {
+                        mobileMenu.style.display = 'flex';
+                        mobileMenu.style.transform = 'translateX(0)';
+                    }
                 });
 
                 // Close menu when clicking a link
-                navLinks.querySelectorAll('.nav-link').forEach(link => {
+                mobileMenu.querySelectorAll('.nav-link').forEach(link => {
                     link.addEventListener('click', function() {
                         toggle.setAttribute('aria-expanded', 'false');
-                        navLinks.classList.remove('is-open');
+                        mobileMenu.style.display = 'none';
+                        mobileMenu.style.transform = 'translateX(100%)';
                     });
                 });
 
                 // Close menu on escape key
                 document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && navLinks.classList.contains('is-open')) {
+                    if (e.key === 'Escape' && mobileMenu.style.display === 'flex') {
                         toggle.setAttribute('aria-expanded', 'false');
-                        navLinks.classList.remove('is-open');
+                        mobileMenu.style.display = 'none';
+                        mobileMenu.style.transform = 'translateX(100%)';
                     }
                 });
             }
