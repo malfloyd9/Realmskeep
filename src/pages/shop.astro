@@ -431,7 +431,7 @@ import Layout from '../layouts/Layout.astro';
 
     <script is:inline>
         (function() {
-            function runShopAnimation() {
+            function runShopAnimation(isNavigation) {
                 if (typeof gsap === 'undefined') return;
 
                 var shopSection = document.querySelector('.shop-coming-soon');
@@ -490,28 +490,35 @@ import Layout from '../layouts/Layout.astro';
                 var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 var tl = gsap.timeline();
 
-                /* 1) Section expands — CSS shop-entry collapsed it, GSAP opens it */
-                if (shopSection && !reducedMotion) {
-                    shopSection.classList.remove('shop-entry');
-                    // Measure natural padding BEFORE re-collapsing
-                    var comp = window.getComputedStyle(shopSection);
-                    var targetPT = comp.paddingTop;
-                    var targetPB = comp.paddingBottom;
-                    var fullH = shopSection.scrollHeight;
-                    // Re-collapse to true zero (padding + height + opacity)
-                    gsap.set(shopSection, { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 1, overflow: 'hidden' });
-                    tl.to(shopSection, {
-                        height: fullH,
-                        paddingTop: targetPT,
-                        paddingBottom: targetPB,
-                        duration: 0.8,
-                        ease: 'power3.out',
-                        onComplete: function() {
-                            gsap.set(shopSection, { clearProps: 'all' });
-                        }
-                    });
-                } else if (shopSection) {
-                    shopSection.classList.remove('shop-entry');
+                /* 1) Section expands (navigation only) — on first load, already visible */
+                if (shopSection) {
+                    if (!reducedMotion && isNavigation) {
+                        // Navigation: curtain-reveal from collapsed state
+                        shopSection.classList.remove('shop-entry');
+                        // Force a full layout reflow so getComputedStyle reads the
+                        // post-removal padding (not stale 0px values from shop-entry).
+                        void shopSection.offsetHeight;
+                        // Measure natural padding BEFORE re-collapsing
+                        var comp = window.getComputedStyle(shopSection);
+                        var targetPT = comp.paddingTop;
+                        var targetPB = comp.paddingBottom;
+                        var fullH = shopSection.scrollHeight;
+                        // Re-collapse to true zero (padding + height + opacity)
+                        gsap.set(shopSection, { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 1, overflow: 'hidden' });
+                        tl.to(shopSection, {
+                            height: fullH,
+                            paddingTop: targetPT,
+                            paddingBottom: targetPB,
+                            duration: 0.8,
+                            ease: 'power3.out',
+                            onComplete: function() {
+                                gsap.set(shopSection, { clearProps: 'all' });
+                            }
+                        });
+                    } else {
+                        // First load: show section immediately, no expand animation
+                        shopSection.classList.remove('shop-entry');
+                    }
                 }
 
                 /* 2) Bubble rises up from the shopkeeper's head — after section is open */
@@ -604,7 +611,10 @@ import Layout from '../layouts/Layout.astro';
             function _initShop() {
                 if (window._shopAnimStarted) return;
                 window._shopAnimStarted = true;
-                runShopAnimation();
+                // Same-origin referrer = navigated here from another page on this site.
+                // More reliable than e.viewTransition which can be null in dev.
+                var isNavigation = !!(document.referrer && document.referrer.indexOf(window.location.origin) === 0);
+                runShopAnimation(isNavigation);
             }
 
             if ('onpagereveal' in window) {

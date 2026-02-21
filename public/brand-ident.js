@@ -862,6 +862,9 @@
 
         stopAmbient();
         stopEternalDuel();
+        // Kill all running logo tweens immediately — prevents ghost animations
+        // from the assembly, ambient, or duel lingering during the exit collapse.
+        gsap.killTweensOf(document.querySelectorAll('#LOGO, #LOGO *'));
 
         // Lock the current height so GSAP can tween it
         var currentH = header.offsetHeight;
@@ -907,7 +910,7 @@
 
   // ---- Init ----
 
-  function init() {
+  function init(isNavigation) {
     var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     var header = document.querySelector('header');
 
@@ -926,8 +929,8 @@
     var ctx = gsap.context(function () {
       trackAnimation('load');
 
-      if (hasHeroEntry) {
-        // Measure the header's natural height:
+      if (hasHeroEntry && isNavigation) {
+        // Navigation return: full header expand animation
         // 1. Remove CSS collapse class so we get the real dimensions
         header.classList.remove('hero-entry');
         var fullHeight = header.offsetHeight;
@@ -968,7 +971,8 @@
           });
         }, 0.45);
       } else {
-        // No header to reveal — just play assembly
+        // First load OR no header: reveal header immediately, just play assembly
+        if (hasHeroEntry) header.classList.remove('hero-entry');
         playAssembly(function () {
           ctx.add(function () {
             startAmbient();
@@ -1006,7 +1010,11 @@
   function _launchHero() {
     if (window._heroAnimStarted) return;
     window._heroAnimStarted = true;
-    init();
+    // Use document.referrer for detection — reliable in both dev and production.
+    // e.viewTransition can be null in dev (Vite injects @view-transition too late),
+    // but the referrer is always set correctly for same-site navigation.
+    var isNavigation = !!(document.referrer && document.referrer.indexOf(window.location.origin) === 0);
+    init(isNavigation);
   }
 
   if ('onpagereveal' in window) {
