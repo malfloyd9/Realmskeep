@@ -654,6 +654,173 @@
     }
   }
 
+  // ---- Siege Attackers ----
+  // D&D silhouettes march in from both sides in a neverending loop.
+  // Starts after assembly completes; killed on nav exit.
+
+  var siegeTweens = [];
+  var siegeEl = null;
+  var siegeRunning = false;
+
+  // viewBox "0 0 28 34", all face RIGHT by default.
+  // Left-side spawns get scaleX:-1 so they face inward.
+  var SIEGE_CHARS = [
+    // Swordsman: oval head + body/legs + forward sword line
+    {
+      fill: 'M14,1C10.7,1 8,3.5 8,6.5C8,9.5 10.7,12 14,12C17.3,12 20,9.5 20,6.5C20,3.5 17.3,1 14,1ZM10.5,12L10.5,22L7,33L12,33L14,26L16,33L21,33L17.5,22L17.5,12Z',
+      stroke: 'M17.5,15L28,9',
+      sw: 2,
+    },
+    // Archer: head + body/legs + bow curve + bowstring + arrow
+    {
+      fill: 'M14,1C10.7,1 8,3.5 8,6.5C8,9.5 10.7,12 14,12C17.3,12 20,9.5 20,6.5C20,3.5 17.3,1 14,1ZM11,12L11,22L7.5,33L12.5,33L14,26.5L15.5,33L20.5,33L17,22L17,12Z',
+      stroke: 'M21,7Q27,16.5 21,26M21,7L21,26M13.5,16.5L21,16.5',
+      sw: 1.6,
+    },
+    // Wizard: pointy hat + wide robes + staff line on left
+    {
+      fill: 'M14,0L6,12L22,12ZM12,12L11,22L7.5,33L12.5,33L14,26.5L15.5,33L20.5,33L17,22L16,12Z',
+      stroke: 'M4.5,12L4.5,33',
+      sw: 2,
+    },
+  ];
+
+  function createAttackerSVG(typeIndex) {
+    var char = SIEGE_CHARS[typeIndex % SIEGE_CHARS.length];
+    var ns = 'http://www.w3.org/2000/svg';
+
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 28 34');
+    svg.setAttribute('width', '15');
+    svg.setAttribute('height', '18');
+    svg.style.cssText = 'position:absolute;top:0;left:0;overflow:visible;pointer-events:none;';
+
+    var body = document.createElementNS(ns, 'path');
+    body.setAttribute('d', char.fill);
+    body.setAttribute('fill', '#111');
+    svg.appendChild(body);
+
+    if (char.stroke) {
+      var weapon = document.createElementNS(ns, 'path');
+      weapon.setAttribute('d', char.stroke);
+      weapon.setAttribute('fill', 'none');
+      weapon.setAttribute('stroke', '#111');
+      weapon.setAttribute('stroke-width', char.sw);
+      weapon.setAttribute('stroke-linecap', 'round');
+      svg.appendChild(weapon);
+    }
+
+    return svg;
+  }
+
+  function spawnSiegeAttacker(side) {
+    if (!siegeRunning || !siegeEl) return;
+
+    var header = siegeEl.parentElement;
+    var headerH = header ? header.offsetHeight : 180;
+    var vw = window.innerWidth;
+    var centerX = vw / 2;
+    // Characters fade out before they reach this radius from center
+    var clearRadius = Math.max(175, vw * 0.17);
+
+    var isLeft = side === 'left';
+    var startX = isLeft ? -22 : vw + 22;
+    var stopX = isLeft
+      ? centerX - clearRadius - gsap.utils.random(40, 120)
+      : centerX + clearRadius + gsap.utils.random(40, 120);
+
+    var el = createAttackerSVG(Math.floor(Math.random() * SIEGE_CHARS.length));
+    var yPos = headerH * gsap.utils.random(0.12, 0.70);
+
+    gsap.set(el, {
+      x: startX,
+      y: yPos,
+      scaleX: isLeft ? 1 : -1,
+      opacity: 0,
+      transformOrigin: '7.5px 9px',
+    });
+
+    siegeEl.appendChild(el);
+
+    var dur = gsap.utils.random(2.2, 3.8);
+
+    gsap.to(el, { x: stopX, duration: dur, ease: 'none' });
+    gsap.to(el, { opacity: gsap.utils.random(0.5, 0.78), duration: 0.4, ease: 'power1.in' });
+    gsap.to(el, {
+      opacity: 0,
+      duration: dur * 0.38,
+      delay: dur * 0.62,
+      ease: 'power2.in',
+      onComplete: function () { if (el.parentNode) el.remove(); },
+    });
+  }
+
+  function siegeLoop() {
+    if (!siegeRunning || !siegeEl) return;
+
+    var lN = Math.round(gsap.utils.random(1, 2.9));
+    var rN = Math.round(gsap.utils.random(1, 2.9));
+
+    for (var l = 0; l < lN; l++) {
+      (function (d) {
+        var tw = gsap.delayedCall(d, function () { spawnSiegeAttacker('left'); });
+        siegeTweens.push(tw);
+      })(l * gsap.utils.random(0.1, 0.3));
+    }
+    for (var r = 0; r < rN; r++) {
+      (function (d) {
+        var tw = gsap.delayedCall(d, function () { spawnSiegeAttacker('right'); });
+        siegeTweens.push(tw);
+      })(r * gsap.utils.random(0.1, 0.3));
+    }
+
+    var next = gsap.delayedCall(gsap.utils.random(0.6, 1.3), siegeLoop);
+    siegeTweens.push(next);
+  }
+
+  function startSiege() {
+    if (window.innerWidth <= 768) return;
+    if (siegeRunning) return;
+
+    var header = document.querySelector('header');
+    if (!header) return;
+
+    if (getComputedStyle(header).position === 'static') {
+      header.style.position = 'relative';
+    }
+
+    siegeEl = document.createElement('div');
+    siegeEl.id = 'siege-layer';
+    siegeEl.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0;';
+    header.appendChild(siegeEl);
+
+    siegeRunning = true;
+    siegeLoop();
+  }
+
+  function stopSiege(opts) {
+    siegeRunning = false;
+    siegeTweens.forEach(function (tw) { tw.kill(); });
+    siegeTweens = [];
+
+    var doFade = opts && opts.fade;
+    if (siegeEl) {
+      if (doFade) {
+        var toFade = siegeEl;
+        siegeEl = null;
+        gsap.to(toFade, {
+          opacity: 0,
+          duration: 0.4,
+          ease: 'power2.in',
+          onComplete: function () { toFade.remove(); },
+        });
+      } else {
+        siegeEl.remove();
+        siegeEl = null;
+      }
+    }
+  }
+
   // ---- Assembly (Phase 1) ----
 
   var TOP_LETTER_SELECTORS = [
@@ -801,6 +968,7 @@
         playAssembly(function () {
           startAmbient();
           startEternalDuel();
+          startSiege();
           if (typeof onAssemblyComplete === 'function') onAssemblyComplete();
         });
       },
@@ -862,6 +1030,7 @@
 
         stopAmbient();
         stopEternalDuel();
+        stopSiege({ fade: true });
         // Kill all running logo tweens immediately — prevents ghost animations
         // from the assembly, ambient, or duel lingering during the exit collapse.
         gsap.killTweensOf(document.querySelectorAll('#LOGO, #LOGO *'));
@@ -968,6 +1137,7 @@
               startAmbient();
               startEternalDuel();
             });
+            startSiege();
           });
         }, 0.45);
       } else {
@@ -978,6 +1148,7 @@
             startAmbient();
             startEternalDuel();
           });
+          startSiege();
         });
       }
     }, scope);
@@ -987,6 +1158,7 @@
       e.preventDefault();
       stopAmbient();
       stopEternalDuel();
+      stopSiege();
       ctx.add(function () {
         vaporizeAndReplay();
       });
