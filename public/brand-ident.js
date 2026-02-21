@@ -839,26 +839,146 @@
     }, 0.2);
   }
 
+  // ---- Nav exit animation ----
+
+  function setupNavExit(header) {
+    if (!header) return;
+
+    var navLinks = document.querySelectorAll('.main-nav .nav-link');
+    var isAnimating = false;
+
+    navLinks.forEach(function (link) {
+      var href = link.getAttribute('href');
+      // Skip the home link — let it do a normal navigation (replays entry animation)
+      if (!href || href === '/' || href === '') return;
+
+      link.addEventListener('click', function (e) {
+        // Don't intercept modified clicks (new tab, etc.)
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+        if (isAnimating) return;
+
+        e.preventDefault();
+        isAnimating = true;
+
+        stopAmbient();
+        stopEternalDuel();
+
+        // Lock the current height so GSAP can tween it
+        var currentH = header.offsetHeight;
+        gsap.set(header, { height: currentH, overflow: 'hidden' });
+
+        var exitTL = gsap.timeline({
+          onComplete: function () {
+            window.location.href = href;
+          },
+        });
+
+        // Logo elements fade and fly up
+        exitTL.to('#LOGO > g', {
+          opacity: 0,
+          y: -30,
+          stagger: 0.04,
+          duration: 0.35,
+          ease: 'power2.in',
+        });
+
+        // Header collapses to zero height
+        exitTL.to(header, {
+          height: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          borderBottomWidth: 0,
+          duration: 0.5,
+          ease: 'power2.inOut',
+        }, '-=0.15');
+
+        // Fade entire page to dark before navigation —
+        // so the VT old-page snapshot is already dark, no white flash
+        exitTL.to('main', {
+          opacity: 0,
+          duration: 0.15,
+          ease: 'power2.in',
+        }, '-=0.2');
+        exitTL.set('body', { backgroundColor: '#0a0a0a' });
+        exitTL.set('footer', { opacity: 0 });
+      });
+    });
+  }
+
   // ---- Init ----
 
   function init() {
     var motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (motionQuery.matches) return;
+    var header = document.querySelector('header');
+
+    if (motionQuery.matches) {
+      // Show header without animation for reduced-motion users
+      if (header) header.classList.remove('hero-entry');
+      return;
+    }
 
     var logoTrigger = document.querySelector('[data-hero-logo-trigger]');
     var scope = document.querySelector('[data-hero-logo-area]');
     if (!scope || !logoTrigger) return;
 
+    var hasHeroEntry = header && header.classList.contains('hero-entry');
+
     var ctx = gsap.context(function () {
       trackAnimation('load');
-      playAssembly(function () {
-        ctx.add(function () {
-          startAmbient();
-          startEternalDuel();
+
+      if (hasHeroEntry) {
+        // Measure the header's natural height:
+        // 1. Remove CSS collapse class so we get the real dimensions
+        header.classList.remove('hero-entry');
+        var fullHeight = header.offsetHeight;
+        // 2. Immediately re-collapse with inline styles (same JS frame, no repaint)
+        gsap.set(header, {
+          height: 0,
+          overflow: 'hidden',
+          paddingTop: 0,
+          paddingBottom: 0,
+          borderBottomWidth: 0,
         });
-      });
+
+        var masterTL = gsap.timeline();
+
+        // Phase 1: Header expands to full height
+        masterTL.to(header, {
+          height: fullHeight,
+          paddingTop: '2rem',
+          paddingBottom: '2rem',
+          borderBottomWidth: 4,
+          duration: 0.8,
+          ease: 'power2.inOut',
+          onComplete: function () {
+            // Release to auto so it stays responsive
+            gsap.set(header, {
+              clearProps: 'height,overflow,paddingTop,paddingBottom,borderBottomWidth',
+            });
+          },
+        });
+
+        // Phase 2: Logo assembly (starts as header is still expanding)
+        masterTL.add(function () {
+          playAssembly(function () {
+            ctx.add(function () {
+              startAmbient();
+              startEternalDuel();
+            });
+          });
+        }, 0.45);
+      } else {
+        // No header to reveal — just play assembly
+        playAssembly(function () {
+          ctx.add(function () {
+            startAmbient();
+            startEternalDuel();
+          });
+        });
+      }
     }, scope);
 
+    // Logo click: vaporize and replay
     logoTrigger.addEventListener('click', function (e) {
       e.preventDefault();
       stopAmbient();
@@ -867,6 +987,11 @@
         vaporizeAndReplay();
       });
     });
+
+    // Set up nav exit animation (closing the header when navigating away)
+    if (hasHeroEntry) {
+      setupNavExit(header);
+    }
   }
 
   // Safety check: only run if GSAP is loaded

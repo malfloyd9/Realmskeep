@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/Layout.astro';
-// Background image: place shopkeep.png in public/ (served at /shopkeep.png)
 ---
 
 <Layout
@@ -43,13 +42,49 @@ import Layout from '../layouts/Layout.astro';
                         src="/shopkeep.png"
                         alt="Realm's Keep 8-bit shopkeeper scene"
                         class="shop-background-img"
-                        width="640"
-                        height="360"
+                        width="2000"
+                        height="2000"
                     />
-                </div>
-                <div class="shop-text-bubble" id="shop-bubble">
-                    <p class="shop-bubble-text" id="shop-message" aria-live="polite"></p>
-                    <span class="shop-bubble-arrow" id="shop-arrow" aria-hidden="true">▼</span>
+
+                    <!-- Speech bubble overlaid above shopkeeper -->
+                    <div class="shop-text-bubble" id="shop-bubble">
+                        <p class="shop-bubble-text" id="shop-message" aria-live="polite"></p>
+                        <span class="shop-bubble-arrow" id="shop-arrow" aria-hidden="true">&#9660;</span>
+                        <div class="shop-bubble-tail" aria-hidden="true"></div>
+                    </div>
+
+                    <!-- Gemini AI badge (clean diamond) -->
+                    <div class="shop-gemini-badge" id="shop-gemini" aria-label="Powered by Gemini AI">
+                        <div class="gemini-diamond"></div>
+                    </div>
+
+                    <!-- Sparkle overlays throughout the scene -->
+                    <!-- Floor sparkles -->
+                    <div class="shop-sparkle sparkle-1" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-2" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-3" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-4" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-5" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-6" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-7" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-8" aria-hidden="true"></div>
+                    <!-- Wall sparkles (upper area, left/right of bubble zone) -->
+                    <div class="shop-sparkle sparkle-9" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-10" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-11" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-12" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-13" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-14" aria-hidden="true"></div>
+                    <!-- Counter / mid sparkles -->
+                    <div class="shop-sparkle sparkle-15" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-16" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-17" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-18" aria-hidden="true"></div>
+                    <!-- Near weapons / shelves -->
+                    <div class="shop-sparkle sparkle-19" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-20" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-21" aria-hidden="true"></div>
+                    <div class="shop-sparkle sparkle-22" aria-hidden="true"></div>
                 </div>
             </div>
         </div>
@@ -57,7 +92,6 @@ import Layout from '../layouts/Layout.astro';
 
     <style>
         .shop-coming-soon {
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -88,7 +122,7 @@ import Layout from '../layouts/Layout.astro';
             position: absolute;
             top: 0.5rem;
             right: 0.5rem;
-            z-index: 5;
+            z-index: 15;
             width: 28px;
             height: 28px;
             padding: 0;
@@ -120,7 +154,6 @@ import Layout from '../layouts/Layout.astro';
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 1.5rem;
             padding: 1.5rem;
             background: #1a1a2e;
         }
@@ -130,14 +163,13 @@ import Layout from '../layouts/Layout.astro';
             z-index: 1;
             width: 100%;
             max-width: 100%;
-            aspect-ratio: 16 / 10;
+            aspect-ratio: 1 / 1;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
             border: 4px solid #0a0a0a;
             background: #2a2a4a;
-            opacity: 1;
         }
 
         .shop-background-img {
@@ -151,27 +183,30 @@ import Layout from '../layouts/Layout.astro';
             image-rendering: crisp-edges;
         }
 
+        /* --- Speech bubble overlay --- */
         .shop-text-bubble {
-            position: relative;
-            z-index: 2;
-            width: 100%;
-            max-width: 100%;
-            padding: 1rem 1.25rem;
+            position: absolute;
+            z-index: 10;
+            top: 15%;
+            left: 28%;
+            right: 28%;
+            padding: 1rem 1.2rem;
             background: #fff;
             border: 4px solid #0a0a0a;
-            border-radius: 0;
+            border-radius: 18px;
             box-shadow: 4px 4px 0 #0a0a0a;
             font-family: 'Press Start 2P', cursive;
-            font-size: clamp(0.5rem, 2.5vw, 0.65rem);
-            line-height: 1.8;
+            font-size: clamp(0.45rem, 1.6vw, 0.72rem);
+            line-height: 2;
             color: #000000;
-            min-height: 4em;
+            min-height: 7em;
+            text-align: center;
         }
 
         .shop-bubble-text {
             margin: 0;
-            min-height: 1.8em;
             color: #000000;
+            text-align: center;
         }
 
         .shop-bubble-arrow {
@@ -182,86 +217,371 @@ import Layout from '../layouts/Layout.astro';
             opacity: 0;
         }
 
+        /* Tail pointing down toward shopkeeper */
+        .shop-bubble-tail {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 20px solid #0a0a0a;
+        }
+        .shop-bubble-tail::after {
+            content: '';
+            position: absolute;
+            top: -24px;
+            left: -10px;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 16px solid #fff;
+        }
+
+        /* --- Etsy link inside bubble --- */
+        :global(.shop-etsy-link) {
+            color: #d4af37;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        :global(.shop-etsy-link:hover) {
+            color: #f4c542;
+        }
+
+        /* --- Gemini badge (clean diamond, bottom-right) --- */
+        .shop-gemini-badge {
+            position: absolute;
+            z-index: 10;
+            bottom: 5%;
+            right: 4%;
+            pointer-events: none;
+        }
+
+        .gemini-diamond {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.4);
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.2));
+            animation: gemini-idle 3s ease-in-out infinite;
+        }
+
+        .shop-gemini-badge.is-active .gemini-diamond {
+            background: #f4c542;
+            filter: drop-shadow(0 0 8px rgba(244, 197, 66, 0.7))
+                    drop-shadow(0 0 16px rgba(244, 197, 66, 0.3));
+            animation: gemini-pulse 0.3s ease-in-out infinite;
+        }
+
+        @keyframes gemini-idle {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50%      { opacity: 0.8; transform: scale(1.15) rotate(15deg); }
+        }
+
+        @keyframes gemini-pulse {
+            0%   { transform: scale(1) rotate(0deg); }
+            50%  { transform: scale(1.6) rotate(45deg); }
+            100% { transform: scale(1) rotate(90deg); }
+        }
+
+        /* --- Floor sparkles (colorful, drifting across the floor) --- */
+        .shop-sparkle {
+            position: absolute;
+            z-index: 4;
+            width: 10px;
+            height: 10px;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            pointer-events: none;
+            opacity: 0;
+            image-rendering: pixelated;
+        }
+
+        /* Floor sparkles */
+        .sparkle-1 { bottom: 18%; left: 8%;   background: #4ade80; animation: drift-a 2.4s ease-in-out infinite 0s; }
+        .sparkle-2 { bottom: 10%; left: 22%;  background: #f97316; animation: drift-b 2.8s ease-in-out infinite 0.3s; }
+        .sparkle-3 { bottom: 15%; left: 38%;  background: #22d3ee; animation: drift-c 2.2s ease-in-out infinite 0.6s; }
+        .sparkle-4 { bottom: 8%;  left: 52%;  background: #fbbf24; animation: drift-a 2.6s ease-in-out infinite 0.9s; }
+        .sparkle-5 { bottom: 20%; left: 65%;  background: #f472b6; animation: drift-b 2.0s ease-in-out infinite 1.2s; }
+        .sparkle-6 { bottom: 12%; left: 78%;  background: #fff;    animation: drift-c 2.5s ease-in-out infinite 0.4s; }
+        .sparkle-7 { bottom: 6%;  left: 45%;  background: #a78bfa; animation: drift-a 2.3s ease-in-out infinite 1.5s; }
+        .sparkle-8 { bottom: 16%; left: 90%;  background: #34d399; animation: drift-b 2.7s ease-in-out infinite 0.7s; }
+
+        /* Wall sparkles — upper left/right (outside bubble zone) */
+        .sparkle-9  { top: 8%;  left: 6%;   background: #fbbf24; animation: drift-c 3.0s ease-in-out infinite 0.2s; width: 7px; height: 7px; }
+        .sparkle-10 { top: 14%; left: 15%;  background: #fff;    animation: drift-a 2.7s ease-in-out infinite 1.0s; width: 8px; height: 8px; }
+        .sparkle-11 { top: 6%;  right: 8%;  left: auto; background: #22d3ee; animation: drift-b 2.9s ease-in-out infinite 0.5s; width: 7px; height: 7px; }
+        .sparkle-12 { top: 18%; right: 12%; left: auto; background: #f472b6; animation: drift-c 2.5s ease-in-out infinite 1.3s; width: 8px; height: 8px; }
+        .sparkle-13 { top: 10%; left: 88%;  background: #a78bfa; animation: drift-a 3.2s ease-in-out infinite 0.8s; width: 6px; height: 6px; }
+        .sparkle-14 { top: 22%; left: 5%;   background: #34d399; animation: drift-b 2.6s ease-in-out infinite 1.6s; width: 9px; height: 9px; }
+
+        /* Counter / mid-scene sparkles */
+        .sparkle-15 { top: 52%; left: 12%;  background: #fbbf24; animation: drift-a 2.8s ease-in-out infinite 0.4s; width: 8px; height: 8px; }
+        .sparkle-16 { top: 48%; left: 85%;  background: #fff;    animation: drift-c 3.1s ease-in-out infinite 1.1s; width: 7px; height: 7px; }
+        .sparkle-17 { top: 55%; left: 30%;  background: #f97316; animation: drift-b 2.4s ease-in-out infinite 0.7s; width: 6px; height: 6px; }
+        .sparkle-18 { top: 50%; left: 72%;  background: #4ade80; animation: drift-a 2.9s ease-in-out infinite 1.4s; width: 8px; height: 8px; }
+
+        /* Near weapons / shelves */
+        .sparkle-19 { top: 32%; left: 4%;   background: #22d3ee; animation: drift-c 2.7s ease-in-out infinite 0.9s; width: 7px; height: 7px; }
+        .sparkle-20 { top: 28%; left: 92%;  background: #f472b6; animation: drift-a 3.0s ease-in-out infinite 0.3s; width: 6px; height: 6px; }
+        .sparkle-21 { top: 38%; left: 10%;  background: #a78bfa; animation: drift-b 2.5s ease-in-out infinite 1.7s; width: 8px; height: 8px; }
+        .sparkle-22 { top: 35%; right: 6%;  left: auto; background: #fbbf24; animation: drift-c 2.8s ease-in-out infinite 0.6s; width: 7px; height: 7px; }
+
+        @keyframes drift-a {
+            0%   { opacity: 0; transform: scale(0.3) translate(0, 0); }
+            25%  { opacity: 0.8; transform: scale(1.2) translate(6px, -4px); }
+            50%  { opacity: 1; transform: scale(1.5) translate(10px, -8px) rotate(45deg); }
+            75%  { opacity: 0.6; transform: scale(1.1) translate(4px, -2px) rotate(60deg); }
+            100% { opacity: 0; transform: scale(0.3) translate(0, 0) rotate(90deg); }
+        }
+
+        @keyframes drift-b {
+            0%   { opacity: 0; transform: scale(0.3) translate(0, 0); }
+            25%  { opacity: 0.7; transform: scale(1.3) translate(-5px, -6px) rotate(-15deg); }
+            50%  { opacity: 1; transform: scale(1.4) translate(-8px, -3px) rotate(-45deg); }
+            75%  { opacity: 0.5; transform: scale(1.0) translate(-3px, -7px) rotate(-70deg); }
+            100% { opacity: 0; transform: scale(0.3) translate(0, 0) rotate(-90deg); }
+        }
+
+        @keyframes drift-c {
+            0%   { opacity: 0; transform: scale(0.3) translate(0, 0); }
+            30%  { opacity: 0.9; transform: scale(1.4) translate(4px, -10px) rotate(20deg); }
+            60%  { opacity: 1; transform: scale(1.6) translate(-2px, -6px) rotate(50deg); }
+            100% { opacity: 0; transform: scale(0.3) translate(0, 0) rotate(80deg); }
+        }
+
+        /* Tablet — bubble starts getting squeezed, widen + shrink text */
+        @media (max-width: 768px) {
+            .shop-text-bubble {
+                font-size: clamp(0.4rem, 1.4vw, 0.6rem);
+                top: 8%;
+                left: 20%;
+                right: 20%;
+                padding: 0.8rem 1rem;
+                min-height: 5em;
+            }
+        }
+
+        /* Small tablet / large phone */
+        @media (max-width: 600px) {
+            .shop-text-bubble {
+                font-size: clamp(0.35rem, 1.3vw, 0.5rem);
+                top: 5%;
+                left: 14%;
+                right: 14%;
+                padding: 0.6rem 0.8rem;
+                min-height: 4.5em;
+                line-height: 1.8;
+            }
+        }
+
         @media (max-width: 480px) {
             .shop-text-bubble {
-                font-size: 0.5rem;
+                font-size: clamp(0.3rem, 1.2vw, 0.42rem);
+                top: 3%;
+                left: 10%;
+                right: 10%;
+                padding: 0.5rem 0.6rem;
+                border-radius: 12px;
+                min-height: 4em;
+                line-height: 1.7;
+                border-width: 3px;
+            }
+            .shop-bubble-tail {
+                bottom: -14px;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-top: 14px solid #0a0a0a;
+            }
+            .shop-bubble-tail::after {
+                top: -17px;
+                left: -7px;
+                border-left: 7px solid transparent;
+                border-right: 7px solid transparent;
+                border-top: 11px solid #fff;
+            }
+        }
+
+        /* Very small phones */
+        @media (max-width: 360px) {
+            .shop-text-bubble {
+                font-size: 0.28rem;
+                top: 2%;
+                left: 6%;
+                right: 6%;
+                padding: 0.4rem 0.5rem;
+                min-height: 3.5em;
+                line-height: 1.6;
             }
         }
     </style>
 
-    <script define:vars={{ message: "WELCOME TO THE KEEP... ONLINE SHOP COMING SOON! CHECK US OUT ON ETSY! LINKS ON THE HOME PAGE! SEE YOU AROUND THE REALM!" }}>
-        function runShopAnimation() {
-            if (typeof gsap === 'undefined') return;
+    <script is:inline>
+        (function() {
+            function runShopAnimation() {
+                if (typeof gsap === 'undefined') return;
 
-            const bg = document.getElementById('shop-bg');
-            const bubbleText = document.getElementById('shop-message');
-            const arrow = document.getElementById('shop-arrow');
-            const muteBtn = document.getElementById('shop-mute');
-            if (!bg || !bubbleText || !arrow) return;
+                var shopSection = document.querySelector('.shop-coming-soon');
+                var bg = document.getElementById('shop-bg');
+                var bubble = document.getElementById('shop-bubble');
+                var bubbleText = document.getElementById('shop-message');
+                var arrow = document.getElementById('shop-arrow');
+                var gemini = document.getElementById('shop-gemini');
+                var muteBtn = document.getElementById('shop-mute');
+                if (!bg || !bubbleText || !arrow) return;
 
-            const fullMessage = typeof message !== 'undefined' ? message : "WELCOME TO THE KEEP... ONLINE SHOP COMING SOON!";
+                /* --- Section expand animation (like home header) --- */
+                var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                if (shopSection && !reducedMotion) {
+                    var fullH = shopSection.scrollHeight;
+                    gsap.set(shopSection, { height: 0, overflow: 'hidden' });
+                    gsap.to(shopSection, {
+                        height: fullH,
+                        duration: 0.7,
+                        ease: 'power2.out',
+                        delay: 0.1,
+                        onComplete: function() {
+                            gsap.set(shopSection, { clearProps: 'height,overflow' });
+                        }
+                    });
+                }
 
-            // --- Bleep foundation: play a short sound on each character (optional) ---
-            // Set BLEEP_SRC to your asset path when you add sound, e.g. '/click.mp3' or '/blip.wav'
-            // const BLEEP_SRC = '/click.mp3';
-            // const BLEEP_SRC = '/blip.wav';
-            let bleepAudio = null; // optional: new Audio(BLEEP_SRC) when BLEEP_SRC is set
-            let shopMuted = false;
+                /* --- Mute toggle --- */
+                var bleepAudio = null;
+                var shopMuted = false;
+                function playBleep() {
+                    if (shopMuted || !bleepAudio) return;
+                    try { bleepAudio.currentTime = 0; bleepAudio.play().catch(function(){}); } catch(e){}
+                }
+                if (muteBtn) {
+                    muteBtn.setAttribute('aria-pressed', 'false');
+                    muteBtn.addEventListener('click', function() {
+                        shopMuted = !shopMuted;
+                        muteBtn.setAttribute('aria-pressed', shopMuted ? 'true' : 'false');
+                        muteBtn.setAttribute('aria-label', shopMuted ? 'Unmute sound' : 'Mute sound');
+                        muteBtn.setAttribute('title', shopMuted ? 'Unmute sound' : 'Mute sound');
+                    });
+                }
 
-            function playBleep() {
-                if (shopMuted) return;
-                if (!bleepAudio) return;
-                try {
-                    bleepAudio.currentTime = 0;
-                    bleepAudio.play().catch(function () {});
-                } catch (e) {}
-            }
+                /* --- Message segments --- */
+                var segments = [
+                    { text: 'WELCOME TO THE KEEP... ONLINE SHOP COMING SOON! CHECK US OUT ON ', isLink: false },
+                    { text: 'ETSY', isLink: true, href: 'https://www.etsy.com/shop/RealmsKeep' },
+                    { text: '! SEE YOU AROUND THE REALM!', isLink: false }
+                ];
+                var chars = [];
+                for (var s = 0; s < segments.length; s++) {
+                    var seg = segments[s];
+                    for (var c = 0; c < seg.text.length; c++) {
+                        chars.push({ char: seg.text[c], isLink: seg.isLink, href: seg.href || null });
+                    }
+                }
 
-            if (muteBtn) {
-                muteBtn.setAttribute('aria-pressed', 'false');
-                muteBtn.addEventListener('click', function () {
-                    shopMuted = !shopMuted;
-                    muteBtn.setAttribute('aria-pressed', shopMuted ? 'true' : 'false');
-                    muteBtn.setAttribute('aria-label', shopMuted ? 'Unmute sound' : 'Mute sound');
-                    muteBtn.setAttribute('title', shopMuted ? 'Unmute sound' : 'Mute sound');
-                });
-            }
+                /* --- Bubble rise-up animation ---
+                   Starts invisible below final position (at shopkeeper's head),
+                   rises slowly to its resting spot, THEN typing begins. */
+                if (bubble) {
+                    gsap.set(bubble, {
+                        opacity: 0,
+                        y: 100,
+                        scale: 0.85,
+                        transformOrigin: '50% 100%'
+                    });
+                }
 
-            // Image is visible instantly via CSS (opacity: 1). Timeline starts with typewriter.
-            const tl = gsap.timeline();
+                var tl = gsap.timeline();
 
-            // Type out message — 0.07s per character (sweet spot for RPG dialogue)
-            const CHAR_DELAY = 0.07;
-            const chars = fullMessage.split('');
-            bubbleText.textContent = '';
-            chars.forEach(function (char, i) {
-                tl.call(
-                    (function (idx) {
-                        return function () {
-                            bubbleText.textContent += fullMessage[idx];
+                /* 1) Bubble rises up from the shopkeeper's head — slow and smooth */
+                if (bubble) {
+                    tl.to(bubble, {
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        duration: 1.2,
+                        ease: 'power2.out'
+                    });
+                }
+
+                /* 2) Brief pause, then start typing */
+                var typeStart = tl.duration() + 0.3;
+                tl.call(function() {
+                    if (gemini) gemini.classList.add('is-active');
+                }, null, typeStart);
+
+                /* 3) Typewriter — character by character */
+                var CHAR_DELAY = 0.07;
+                var currentHTML = '';
+                var inLink = false;
+                bubbleText.innerHTML = '';
+
+                for (var i = 0; i < chars.length; i++) {
+                    (function(idx) {
+                        tl.call(function() {
+                            var ch = chars[idx];
+                            if (ch.isLink && !inLink) {
+                                currentHTML += '<a href="' + ch.href + '" target="_blank" rel="noopener" class="shop-etsy-link">';
+                                inLink = true;
+                            }
+                            currentHTML += ch.char;
+                            if (inLink && (idx + 1 >= chars.length || !chars[idx + 1].isLink)) {
+                                currentHTML += '</a>';
+                                inLink = false;
+                            }
+                            bubbleText.innerHTML = currentHTML;
                             playBleep();
-                        };
-                    })(i),
-                    null,
-                    i * CHAR_DELAY
-                );
-            });
+                        }, null, typeStart + idx * CHAR_DELAY);
+                    })(i);
+                }
 
-            // Blinking arrow
-            tl.set(arrow, { opacity: 1 }, '-=0.2');
-            tl.to(arrow, {
-                opacity: 0,
-                duration: 0.5,
-                repeat: -1,
-                yoyo: true,
-                ease: 'power1.inOut'
-            });
-        }
+                /* 4) Typing done — deactivate gemini */
+                var endTime = typeStart + chars.length * CHAR_DELAY + 0.15;
+                tl.call(function() {
+                    if (gemini) gemini.classList.remove('is-active');
+                }, null, endTime);
 
-        if (document.readyState === 'complete') {
-            runShopAnimation();
-        } else {
-            window.addEventListener('load', runShopAnimation);
-        }
+                /* 5) Blinking arrow */
+                tl.set(arrow, { opacity: 1 }, endTime);
+                tl.to(arrow, { opacity: 0, duration: 0.5, repeat: -1, yoyo: true, ease: 'power1.inOut' });
+
+                /* --- Shop exit animation — collapse when navigating away --- */
+                if (shopSection && !reducedMotion) {
+                    var isExiting = false;
+                    document.querySelectorAll('.main-nav .nav-link').forEach(function(link) {
+                        var href = link.getAttribute('href');
+                        if (!href || href === '/shop') return;
+
+                        link.addEventListener('click', function(e) {
+                            if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+                            if (isExiting) return;
+                            e.preventDefault();
+                            isExiting = true;
+
+                            tl.kill();
+                            var currentH = shopSection.offsetHeight;
+                            gsap.set(shopSection, { height: currentH, overflow: 'hidden' });
+                            gsap.to(shopSection, {
+                                height: 0,
+                                paddingTop: 0,
+                                paddingBottom: 0,
+                                opacity: 0,
+                                duration: 0.4,
+                                ease: 'power2.in',
+                                onComplete: function() {
+                                    window.location.href = href;
+                                }
+                            });
+                        });
+                    });
+                }
+            }
+
+            if (document.readyState === 'complete') {
+                runShopAnimation();
+            } else {
+                window.addEventListener('load', runShopAnimation);
+            }
+        })();
     </script>
 </Layout>

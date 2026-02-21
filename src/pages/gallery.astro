@@ -1,0 +1,129 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+    title="Gallery | Realm's Keep"
+    description="Gallery of Realm's Keep gaming gear, dice trays, apparel, and tabletop accessories. Coming soon."
+    canonicalURL="https://realmskeep.com/gallery"
+>
+    <section class="gallery-coming-soon">
+        <div class="container">
+            <h2 class="section-title">The Gallery</h2>
+            <div class="gallery-placeholder">
+                <div class="gallery-icon" aria-hidden="true">
+                    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="8" y="8" width="64" height="48" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
+                        <circle cx="28" cy="28" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <path d="M8 44 L28 28 L48 40 L56 32 L72 44" stroke="currentColor" stroke-width="1.5" fill="none"/>
+                        <rect x="20" y="62" width="40" height="4" rx="2" fill="currentColor" opacity="0.3"/>
+                    </svg>
+                </div>
+                <h3 class="gallery-subtitle">Treasures Under Construction</h3>
+                <p class="gallery-message">
+                    The gallery is being prepared by the Keep's artisans.
+                    Soon you will find images of our handcrafted gaming gear,
+                    organized by collection and category.
+                </p>
+                <p class="gallery-note">
+                    In the meantime, explore our wares on
+                    <a href="https://www.etsy.com/shop/RealmsKeep" target="_blank" rel="noopener">Etsy</a>
+                    or browse the <a href="/lore">Lore</a>.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <style is:global>
+        main:has(.gallery-coming-soon) {
+            background: #0a0a0a;
+        }
+    </style>
+
+    <style>
+        .gallery-coming-soon {
+            padding: 4rem 0;
+            color: var(--white);
+            text-align: center;
+            min-height: calc(100vh - 200px);
+        }
+
+        .gallery-coming-soon .section-title {
+            color: var(--white);
+        }
+
+        .gallery-coming-soon .section-title::after {
+            background: #f4c542;
+        }
+
+        .gallery-placeholder {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            backdrop-filter: blur(2px);
+        }
+
+        .gallery-icon {
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 1.5rem;
+        }
+
+        .gallery-subtitle {
+            font-family: var(--primary-font);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .gallery-message {
+            opacity: 0.85;
+            font-size: 1.05rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .gallery-note {
+            opacity: 0.7;
+            font-size: 0.95rem;
+        }
+
+        .gallery-note a {
+            color: #f4c542;
+            text-decoration: underline;
+            transition: opacity var(--transition-speed) ease;
+        }
+
+        .gallery-note a:hover {
+            opacity: 0.8;
+        }
+
+        @media (max-width: 480px) {
+            .gallery-coming-soon {
+                padding: 2rem 0;
+            }
+
+            .gallery-coming-soon .section-title {
+                font-size: 1.6rem !important;
+                letter-spacing: 1px !important;
+            }
+
+            .gallery-placeholder {
+                margin: 0 1rem;
+                padding: 2rem 1.25rem;
+            }
+
+            .gallery-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .gallery-message {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</Layout>

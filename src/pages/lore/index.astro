@@ -14,87 +14,39 @@ const sortedPosts = lorePosts.sort((a, b) =>
     description="Stories, insights, and the craft behind Realm's Keep gaming gear. Explore our lore collection featuring tales of craftsmanship, D&D adventures, and tabletop gaming culture."
     canonicalURL="https://realmskeep.com/lore"
 >
-    <section class="testimonials-section" style="min-height: calc(100vh - 200px); padding: 4rem 0;">
+    <section class="lore-section">
         <div class="container">
             <h2 class="section-title">The Lore</h2>
-            <p style="text-align: center; margin-bottom: 3rem; opacity: 0.9; font-size: 1.1rem;">
+            <p class="lore-subtitle">
                 Stories, insights, and the craft behind Realm's Keep
             </p>
             
             {sortedPosts.length === 0 ? (
-                <p style="text-align: center; opacity: 0.7;">No lore posts yet. Check back soon!</p>
+                <p class="lore-empty">No lore posts yet. Check back soon!</p>
             ) : (
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto;">
+                <div class="lore-grid">
                     {sortedPosts.map((post) => (
-                        <a 
-                            href={`/lore/${post.id}`}
-                            class="lore-card"
-                            style="display: block; text-decoration: none; color: inherit;"
-                        >
-                            <article style="
-                                background: rgba(255,255,255,0.06);
-                                border: 1px solid rgba(255,255,255,0.2);
-                                border-radius: 10px;
-                                padding: 2rem;
-                                backdrop-filter: blur(2px);
-                                transition: transform var(--transition-speed) ease, 
-                                            box-shadow var(--transition-speed) ease, 
-                                            border-color var(--transition-speed) ease;
-                                height: 100%;
-                                display: flex;
-                                flex-direction: column;
-                            ">
-                                <div style="margin-bottom: 1rem;">
-                                    <h3 style="
-                                        font-family: var(--primary-font);
-                                        font-size: 1.5rem;
-                                        margin-bottom: 0.75rem;
-                                        text-transform: uppercase;
-                                        letter-spacing: 1px;
-                                        color: var(--white);
-                                    ">{post.data.title}</h3>
-                                    <p style="
-                                        opacity: 0.85;
-                                        font-size: 0.95rem;
-                                        line-height: 1.5;
-                                        margin-bottom: 1rem;
-                                    ">{post.data.description}</p>
+                        <a href={`/lore/${post.id}`} class="lore-card">
+                            <article class="lore-card-inner">
+                                <div class="lore-card-body">
+                                    <h3 class="lore-card-title">{post.data.title}</h3>
+                                    <p class="lore-card-desc">{post.data.description}</p>
                                 </div>
-                                
-                                <div style="margin-top: auto; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1rem;">
-                                        <span style="
-                                            font-size: 0.85rem;
-                                            opacity: 0.7;
-                                            text-transform: uppercase;
-                                            letter-spacing: 1px;
-                                        ">{post.data.author}</span>
-                                        <time style="
-                                            font-size: 0.85rem;
-                                            opacity: 0.7;
-                                        " datetime={post.data.pubDate.toISOString()}>
-                                            {post.data.pubDate.toLocaleDateString('en-US', { 
-                                                year: 'numeric', 
-                                                month: 'long', 
-                                                day: 'numeric' 
+                                <div class="lore-card-footer">
+                                    <div class="lore-card-meta">
+                                        <span class="lore-card-author">{post.data.author}</span>
+                                        <time class="lore-card-date" datetime={post.data.pubDate.toISOString()}>
+                                            {post.data.pubDate.toLocaleDateString('en-US', {
+                                                year: 'numeric',
+                                                month: 'long',
+                                                day: 'numeric'
                                             })}
                                         </time>
                                     </div>
-                                    
                                     {post.data.tags && post.data.tags.length > 0 && (
-                                        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                                        <div class="lore-card-tags">
                                             {post.data.tags.map((tag) => (
-                                                <span style="
-                                                    font-size: 0.68rem;
-                                                    letter-spacing: 1.1px;
-                                                    text-transform: uppercase;
-                                                    color: rgba(255,255,255,0.78);
-                                                    border: 1px solid rgba(255,255,255,0.28);
-                                                    background: rgba(255,255,255,0.08);
-                                                    border-radius: 999px;
-                                                    padding: 0.2rem 0.55rem;
-                                                    line-height: 1.2;
-                                                ">{tag}</span>
+                                                <span class="lore-tag">{tag}</span>
                                             ))}
                                         </div>
                                     )}
@@ -107,22 +59,171 @@ const sortedPosts = lorePosts.sort((a, b) =>
         </div>
     </section>
 
+    <style is:global>
+        main:has(.lore-section) {
+            background: var(--black);
+        }
+    </style>
+
     <style>
-        .lore-card:hover article {
+        .lore-section {
+            min-height: calc(100vh - 200px);
+            padding: 4rem 0;
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .lore-section .section-title {
+            color: var(--white);
+        }
+
+        .lore-section .section-title::after {
+            background: #f4c542;
+        }
+
+        .lore-subtitle {
+            text-align: center;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .lore-empty {
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .lore-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 480px));
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .lore-card {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .lore-card-inner {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 2rem;
+            backdrop-filter: blur(2px);
+            transition: transform var(--transition-speed) ease,
+                        box-shadow var(--transition-speed) ease,
+                        border-color var(--transition-speed) ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .lore-card:hover .lore-card-inner {
             transform: translateY(-6px) scale(1.03);
             box-shadow: 0 16px 36px rgba(0,0,0,0.35);
             border-color: rgba(255,255,255,0.4);
         }
 
+        .lore-card-body {
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+
+        .lore-card-title {
+            font-family: var(--primary-font);
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--white);
+        }
+
+        .lore-card-desc {
+            opacity: 0.85;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .lore-card-footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .lore-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .lore-card-author,
+        .lore-card-date {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .lore-card-author {
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .lore-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            align-content: center;
+            min-height: 3.5rem;
+        }
+
+        .lore-tag {
+            font-size: 0.68rem;
+            letter-spacing: 1.1px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.78);
+            border: 1px solid rgba(255,255,255,0.28);
+            background: rgba(255,255,255,0.08);
+            border-radius: 999px;
+            padding: 0.2rem 0.55rem;
+            line-height: 1.2;
+        }
+
         @media (max-width: 768px) {
-            .lore-card article {
+            .lore-card-inner {
                 padding: 1.5rem;
             }
         }
 
         @media (max-width: 480px) {
-            .lore-card article h3 {
+            .lore-section {
+                padding: 2rem 0;
+            }
+
+            .lore-section .section-title {
+                font-size: 1.6rem !important;
+                letter-spacing: 1px !important;
+            }
+
+            .lore-subtitle {
+                font-size: 0.95rem;
+                padding: 0 0.5rem;
+            }
+
+            .lore-card-title {
                 font-size: 1.25rem;
+            }
+
+            .lore-grid {
+                grid-template-columns: 1fr;
+                padding: 0 0.5rem;
             }
         }
     </style>

@@ -5,10 +5,11 @@ interface Props {
     title: string;
     description?: string;
     canonicalURL?: string;
+    isHome?: boolean;
     children?: any;
 }
 
-const { title, description, canonicalURL, children } = Astro.props;
+const { title, description, canonicalURL, isHome = false, children } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -17,6 +18,8 @@ const { title, description, canonicalURL, children } = Astro.props;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="pinterest" content="nopin">
+    <meta name="color-scheme" content="dark">
+    <style>html,body{background:#0a0a0a;color:#e5e5e5}</style>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
@@ -29,20 +32,23 @@ const { title, description, canonicalURL, children } = Astro.props;
     <slot name="head" />
 </head>
 <body>
-    <header class="masthead">
+    <nav class="main-nav" aria-label="Main navigation">
         <div class="container">
-            <div class="header-content">
-                <nav class="nav-left" aria-label="Left navigation">
-                    <div class="nav-links">
-                        <a href="/" class="nav-link">Home</a>
-                        <a href="/lore" class="nav-link">Lore</a>
-                    </div>
-                </nav>
-                
-                <div class="logo-section">
-                    <div class="logo-container" data-hero-logo-area>
-                        <a href="/" data-hero-logo-trigger>
-                            <svg id="LOGO" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" aria-label="Realm's Keep Logo" data-pin-nopin="true">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/lore" class="nav-link">Lore</a>
+            <a href="/gallery" class="nav-link">Gallery</a>
+            <a href="/shop" class="nav-link">Shop</a>
+            <a href="/faq" class="nav-link">FAQ</a>
+        </div>
+    </nav>
+
+    {isHome && (
+    <header class="hero-entry">
+        <div class="container">
+            <div class="logo-section">
+                <div class="logo-container" data-hero-logo-area>
+                    <a href="/" data-hero-logo-trigger>
+                        <svg id="LOGO" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" aria-label="Realm's Keep Logo" data-pin-nopin="true">
                         <g id="GAMING_GEAR" data-name="GAMING GEAR">
                             <g id="GEAR">
                                 <path id="letter_R" data-name="letter R" d="M386.54,429.06l-15.88-11.46c3.81,6.09,6.75,9.41,11.15,15.01l-6.01,4.64-25.4-31.29c-.83-1.03-3.28-2.29-4.57-3.38l10.02-7.9c2.18-1.72,7.11-2.62,9.76-1.2,6.86,3.68,10.95,10.32,10.55,18.26l16.09,12.4-5.72,4.92ZM360.97,398.72c-1.28-.74-4.41.1-5.32,1.22l11.92,14.71c5.8-4.95-1.43-12.92-6.59-15.93Z"/>
@@ -89,107 +95,84 @@ const { title, description, canonicalURL, children } = Astro.props;
                             </g>
                         </g>
                     </svg>
-                        </a>
-                    </div>
+                    </a>
                 </div>
-                
-                <nav class="nav-right" aria-label="Right navigation">
-                    <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </button>
-                    <div class="nav-links">
-                        <a href="/shop" class="nav-link">Shop</a>
-                        <a href="/faq" class="nav-link">FAQ</a>
-                    </div>
-                </nav>
             </div>
         </div>
     </header>
+    )}
 
     <style is:global>
-        /* Header - NOT fixed, scrolls with page */
-        .masthead {
-            position: relative;
-            background: var(--white);
-            border-bottom: 4px double var(--black);
+        /* --- Native cross-document view transitions (Chrome/Edge/Safari) --- */
+        @view-transition {
+            navigation: auto;
         }
 
-        body {
-            padding-top: 0 !important;
+        /* Kill the white flash: paint the VT layer dark */
+        ::view-transition {
+            background-color: #0a0a0a;
         }
 
-        /* Ensure main content is visible and starts below header */
-        main {
-            display: block !important;
-            position: relative !important;
-            width: 100% !important;
-            margin-top: 0 !important;
-            padding-top: 0 !important;
-            z-index: 1 !important;
+        /* Nav: instant swap — looks frozen since snapshots match */
+        ::view-transition-old(main-nav),
+        ::view-transition-new(main-nav) {
+            animation: none;
         }
 
-        /* Ensure hero section and all sections are visible */
-        .hero,
-        section {
-            position: relative !important;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
+        /* Root (body bg, header, footer): INSTANT — never shows white body */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
         }
 
-        .masthead .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem;
+        /* Content: ultra-fast fade (80ms total, barely perceptible) */
+        ::view-transition-old(page-content) {
+            animation: 50ms linear both vt-fade-out;
+        }
+        ::view-transition-new(page-content) {
+            animation: 50ms linear 30ms both vt-fade-in;
         }
 
-        .header-content {
-            display: grid !important;
-            grid-template-columns: auto 1fr auto;
-            align-items: center !important;
-            gap: 3rem;
-            padding: 1rem 0;
-            width: 100% !important;
+        @keyframes vt-fade-out {
+            to { opacity: 0; }
+        }
+        @keyframes vt-fade-in {
+            from { opacity: 0; }
         }
 
-        .nav-left {
-            grid-column: 1;
+        header .container {
             display: flex !important;
+            flex-direction: column !important;
             align-items: center !important;
-            justify-content: flex-start !important;
+            justify-content: center !important;
+            text-align: center;
         }
 
-        .logo-section {
-            grid-column: 2;
+        header .logo-section {
+            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            position: relative;
-        }
-        
-        /* Align nav buttons so their tops align with logo center */
-        .nav-left,
-        .nav-right {
-            align-items: flex-start !important;
+            padding: 1rem 0;
         }
 
-        .logo-container {
-            margin: 0;
+        header .logo-container {
+            margin: 0 auto;
             text-align: center;
             display: flex;
             justify-content: center;
-            max-width: 300px;
-        }
-
-        .logo-container a {
-            display: inline-block;
             width: 100%;
             max-width: 300px;
         }
 
-        .logo-container svg {
+        header .logo-container a {
+            display: inline-block;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        header .logo-container svg {
             width: 100%;
             max-width: 300px;
             height: auto;
@@ -197,327 +180,208 @@ const { title, description, canonicalURL, children } = Astro.props;
             visibility: visible !important;
         }
 
-        .logo-container svg#LOGO {
-            opacity: 1 !important;
-            visibility: visible !important;
+        /* Header entry animation — starts collapsed, expanded by brand-ident.js */
+        header.hero-entry {
+            height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
-        /* Navigation */
-        .nav-right {
-            grid-column: 3;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-end !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-        }
-        
-        .nav-left .nav-links,
-        .nav-right .nav-links {
-            display: flex !important;
-            flex-direction: row !important;
-            gap: 1rem;
-            align-items: flex-start !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: relative !important;
-            transform: none !important;
-            background: transparent !important;
-            padding: 0 !important;
-            list-style: none;
-            margin-top: calc(150px - 0.75rem) !important; /* Logo center (150px) minus button top padding */
-        }
-        
-        @media (min-width: 769px) {
-            .nav-left .nav-links,
-            .nav-right .nav-links {
-                margin-top: calc(150px - 0.75rem) !important;
+        @media (prefers-reduced-motion: reduce) {
+            header.hero-entry {
+                height: auto;
+                overflow: visible;
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+                border-bottom: 4px double var(--black);
             }
         }
 
-        .mobile-menu-toggle {
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-            z-index: 1001;
+        .main-nav {
+            background: linear-gradient(180deg, #2e2e2e 0%, #1a1a1a 100%);
+            border-bottom: 2px solid var(--black);
+            padding: 1rem 0;
+            width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            view-transition-name: main-nav;
         }
 
-        .mobile-menu-toggle span {
-            display: block;
-            width: 24px;
-            height: 2px;
-            background: var(--black);
-            transition: all var(--transition-speed) ease;
+        .main-nav .container {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            gap: 0.75rem;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
         }
 
-        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
-            transform: rotate(45deg) translate(6px, 6px);
-        }
-
-        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
-            transform: rotate(-45deg) translate(6px, -6px);
-        }
-
-
-        .nav-link {
+        .main-nav .nav-link {
             font-family: 'Cinzel', serif !important;
-            font-size: 1.2rem !important;
+            font-size: 1rem !important;
             font-weight: 500 !important;
             text-transform: uppercase !important;
             letter-spacing: 0.05em !important;
-            color: var(--white) !important;
-            background: var(--black) !important;
+            color: #E5E5E5 !important;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2) !important;
             text-decoration: none !important;
             position: relative;
             transition: all var(--transition-speed) ease;
-            padding: 0.75rem 1.5rem !important;
+            background: #000000 !important;
+            border: 1px solid #4a4a4a !important;
+            border-radius: 4px;
+            padding: 0.7rem 1rem !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex: 0 1 auto;
+            min-width: 80px;
+            text-align: center;
             white-space: nowrap;
-            display: inline-block !important;
             visibility: visible !important;
             opacity: 1 !important;
-            border: 2px solid var(--black) !important;
-            border-top: 2px solid rgba(255, 255, 255, 0.2) !important;
-            border-left: 2px solid rgba(255, 255, 255, 0.2) !important;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.5) !important;
-            border-right: 2px solid rgba(0, 0, 0, 0.5) !important;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4),
-                        0 3px 6px rgba(0, 0, 0, 0.3),
-                        inset 0 2px 4px rgba(255, 255, 255, 0.15),
-                        inset 0 -2px 4px rgba(0, 0, 0, 0.5) !important;
-            transform: translateY(0);
-            border-radius: 4px;
         }
 
-        .nav-link::after {
+        /* Gold reveal overlay on hover */
+        .main-nav .nav-link::before {
             content: '';
             position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 2px;
-            background: #d4af37;
-            transition: width var(--transition-speed) ease;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity var(--transition-speed) ease;
+            z-index: -1;
         }
 
-        .nav-link:hover,
-        .nav-link:focus {
+        /* Hover: dark → gold glow bloom */
+        .main-nav .nav-link:hover,
+        .main-nav .nav-link:focus {
             color: #d4af37 !important;
-            background: var(--black) !important;
-            border-top: 2px solid rgba(255, 255, 255, 0.3) !important;
-            border-left: 2px solid rgba(255, 255, 255, 0.3) !important;
-            border-bottom: 2px solid rgba(0, 0, 0, 0.6) !important;
-            border-right: 2px solid rgba(0, 0, 0, 0.6) !important;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5),
-                        0 4px 8px rgba(0, 0, 0, 0.4),
-                        inset 0 2px 4px rgba(255, 255, 255, 0.2),
-                        inset 0 -2px 4px rgba(0, 0, 0, 0.6),
-                        0 0 12px rgba(212, 175, 55, 0.3) !important;
-            transform: translateY(-3px);
-        }
-        
-        .nav-link:active {
-            transform: translateY(0px);
-            border-top: 2px solid rgba(0, 0, 0, 0.5) !important;
-            border-left: 2px solid rgba(0, 0, 0, 0.5) !important;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1) !important;
-            border-right: 2px solid rgba(255, 255, 255, 0.1) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4),
-                        inset 0 3px 6px rgba(0, 0, 0, 0.5),
-                        inset 0 -1px 2px rgba(255, 255, 255, 0.1) !important;
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.6), 0 0 15px rgba(212, 175, 55, 0.4) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.6), 0 0 15px rgba(212, 175, 55, 0.4) !important;
+            border-color: #d4af37 !important;
+            background: rgba(255, 255, 255, 0.05) !important;
         }
 
-        .nav-link:hover::after,
-        .nav-link:focus::after {
-            width: 80%;
+        .main-nav .nav-link:hover::before,
+        .main-nav .nav-link:focus::before {
+            opacity: 1;
         }
 
-        .nav-link[aria-current="page"],
-        .nav-link.active {
+        .main-nav .nav-link:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.5) !important;
+        }
+
+        /* Active state - highlight current page with gold */
+        .main-nav .nav-link[aria-current="page"],
+        .main-nav .nav-link.active {
             color: #d4af37 !important;
-            background: var(--black) !important;
+            text-shadow: 0 0 6px rgba(212, 175, 55, 0.5) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border-color: #d4af37 !important;
+            box-shadow: 0 3px 12px rgba(212, 175, 55, 0.5) !important;
         }
 
-        .nav-link[aria-current="page"]::after,
-        .nav-link.active::after {
-            width: 80%;
+        @media (max-width: 600px) {
+            .main-nav .container {
+                gap: 0.5rem;
+                padding: 0 0.5rem;
+            }
+
+            .main-nav .nav-link {
+                font-size: 0.8rem !important;
+                padding: 0.5rem 0.7rem !important;
+                min-width: 65px;
+                letter-spacing: 1px !important;
+            }
         }
 
-        /* Mobile styles - ONLY apply on mobile */
-        @media (max-width: 768px) {
-            .header-content {
-                grid-template-columns: auto 1fr auto;
-                gap: 1rem;
-                padding: 0.75rem 0;
-            }
-            
-            .nav-left {
-                display: none !important;
-            }
-            
-            .logo-section {
-                grid-column: 2;
-            }
-            
-            .nav-right {
-                grid-column: 3;
+        @media (max-width: 400px) {
+            .main-nav .container {
+                gap: 0.35rem;
+                padding: 0 0.4rem;
             }
 
-            .logo-container {
-                max-width: 200px;
-            }
-
-            .logo-container svg {
-                max-width: 200px;
-            }
-
-            .mobile-menu-toggle {
-                display: flex !important;
-            }
-
-            /* On mobile, hide desktop nav links */
-            .nav-left .nav-links,
-            .nav-right .nav-links {
-                display: none !important;
-                margin-top: 0 !important;
-            }
-            
-            /* Mobile menu created by JS */
-            .mobile-menu {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background: rgba(255, 255, 255, 0.98);
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                gap: 2rem;
-                z-index: 1002;
-                padding: 2rem;
-                transform: translateX(100%);
-                transition: transform var(--transition-speed) ease;
-            }
-
-            .nav-link {
-                font-size: 1.25rem !important;
-                padding: 1rem 2rem !important;
-                width: auto;
-            }
-
-            .nav-link::after {
-                display: none;
+            .main-nav .nav-link {
+                font-size: 0.65rem !important;
+                padding: 0.4rem 0.5rem !important;
+                min-width: auto;
+                letter-spacing: 0.03em !important;
             }
         }
-        
-        /* Desktop: Ensure nav is visible and inline */
-        @media (min-width: 769px) {
-            .nav-left .nav-links,
-            .nav-right .nav-links {
-                position: relative !important;
-                transform: none !important;
-                background: transparent !important;
-                flex-direction: row !important;
-                top: auto !important;
-                left: auto !important;
-                right: auto !important;
-                bottom: auto !important;
-                padding: 0 !important;
-                display: flex !important;
-                margin-top: calc(150px - 0.75rem) !important;
-            }
-            
-            .mobile-menu-toggle {
-                display: none !important;
-            }
+
+        /* Prevent horizontal overflow on all pages */
+        html, body {
+            width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        main {
+            overflow-x: hidden;
+            max-width: 100%;
+            view-transition-name: page-content;
         }
 
         @media (max-width: 480px) {
-            .logo-container {
-                max-width: 150px;
+            /* Override column nav default — keep horizontal wrap */
+            .main-nav .nav-link {
+                width: auto !important;
+                max-width: none !important;
+                font-size: 0.75rem !important;
+                padding: 0.45rem 0.6rem !important;
+                min-width: auto !important;
+                letter-spacing: 0.5px !important;
             }
 
-            .logo-container svg {
-                max-width: 150px;
+            .main-nav .container {
+                gap: 0.4rem;
             }
 
-            .header-content {
-                padding: 0.5rem 0;
-                gap: 1rem;
+            .container {
+                padding: 0 1rem !important;
+            }
+
+            .section-title {
+                font-size: 1.6rem !important;
+                letter-spacing: 1px !important;
+            }
+
+            h1, h2, h3 {
+                overflow-wrap: break-word;
+                word-break: break-word;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem !important;
+                letter-spacing: 1px !important;
+            }
+
+            .hero p {
+                font-size: 1rem !important;
+            }
+
+            .hero {
+                padding: 3rem 1rem !important;
             }
         }
     </style>
-
-    <script is:inline>
-        // Mobile menu toggle
-        document.addEventListener('DOMContentLoaded', function() {
-            const toggle = document.querySelector('.mobile-menu-toggle');
-            const navRight = document.querySelector('.nav-right .nav-links');
-            const navLeft = document.querySelector('.nav-left .nav-links');
-            
-            if (toggle) {
-                // Create mobile menu container
-                const mobileMenu = document.createElement('div');
-                mobileMenu.className = 'nav-links mobile-menu';
-                
-                // Combine all nav links for mobile
-                if (navLeft) {
-                    navLeft.querySelectorAll('.nav-link').forEach(link => {
-                        const clone = link.cloneNode(true);
-                        mobileMenu.appendChild(clone);
-                    });
-                }
-                if (navRight) {
-                    navRight.querySelectorAll('.nav-link').forEach(link => {
-                        const clone = link.cloneNode(true);
-                        mobileMenu.appendChild(clone);
-                    });
-                }
-                
-                document.body.appendChild(mobileMenu);
-                
-                toggle.addEventListener('click', function() {
-                    const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-                    toggle.setAttribute('aria-expanded', !isExpanded);
-                    if (isExpanded) {
-                        mobileMenu.style.display = 'none';
-                        mobileMenu.style.transform = 'translateX(100%)';
-                    } else {
-                        mobileMenu.style.display = 'flex';
-                        mobileMenu.style.transform = 'translateX(0)';
-                    }
-                });
-
-                // Close menu when clicking a link
-                mobileMenu.querySelectorAll('.nav-link').forEach(link => {
-                    link.addEventListener('click', function() {
-                        toggle.setAttribute('aria-expanded', 'false');
-                        mobileMenu.style.display = 'none';
-                        mobileMenu.style.transform = 'translateX(100%)';
-                    });
-                });
-
-                // Close menu on escape key
-                document.addEventListener('keydown', function(e) {
-                    if (e.key === 'Escape' && mobileMenu.style.display === 'flex') {
-                        toggle.setAttribute('aria-expanded', 'false');
-                        mobileMenu.style.display = 'none';
-                        mobileMenu.style.transform = 'translateX(100%)';
-                    }
-                });
-            }
-        });
-    </script>
 
     <main>
         <slot />
@@ -535,7 +399,8 @@ const { title, description, canonicalURL, children } = Astro.props;
     <script is:inline src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script is:inline src="/brand-ident.js"></script>
     <script is:inline src="/main.js"></script>
-    
+    <script is:inline src="/nav-transitions.js"></script>
+
     <slot name="scripts" />
 </body>
 </html>

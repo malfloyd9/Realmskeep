@@ -22,8 +22,8 @@ html {
 
 body {
     font-family: var(--secondary-font);
-    background-color: var(--white);
-    color: var(--black);
+    background-color: var(--black);
+    color: var(--white);
     line-height: 1.6;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
@@ -190,6 +190,7 @@ header .container {
 .collection-section {
     padding: 5rem 0;
     background-color: var(--gray);
+    color: var(--black);
     margin-bottom: 0;
     position: relative;
     overflow: hidden;
