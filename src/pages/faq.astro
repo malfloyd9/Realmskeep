@@ -100,6 +100,8 @@ import Layout from '../layouts/Layout.astro';
             margin: 0 auto 2.5rem;
             text-align: center;
             max-width: 850px;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
             background: #f5efe3;
             background-image:
                 url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
@@ -115,8 +117,8 @@ import Layout from '../layouts/Layout.astro';
 
         .scribe-line1-wrap {
             position: relative;
-            display: inline-block;
-            min-width: 28em;
+            display: block;
+            width: 100%;
             text-align: center;
         }
 
@@ -264,6 +266,15 @@ import Layout from '../layouts/Layout.astro';
             white-space: normal;
         }
 
+        /* Tablets: scale down but still fits on one line */
+        @media (max-width: 640px) {
+            .scribe-cursive,
+            .scribe-faq-title {
+                font-size: clamp(1.6rem, 4vw, 2.5rem);
+            }
+        }
+
+        /* Phones: small enough that both titles stay on one line */
         @media (max-width: 480px) {
             .faq-container {
                 padding: 2rem 1rem 2rem;
@@ -274,18 +285,9 @@ import Layout from '../layouts/Layout.astro';
                 max-width: 100%;
             }
 
-            .scribe-line1-wrap {
-                min-width: auto;
-                width: 100%;
-            }
-
-            .scribe-cursive {
-                font-size: clamp(1.6rem, 5vw, 2.5rem);
-            }
-
+            .scribe-cursive,
             .scribe-faq-title {
-                font-size: clamp(1.6rem, 5vw, 2.5rem);
-                white-space: normal;
+                font-size: clamp(0.95rem, 4vw, 1.6rem);
             }
 
             .faq-question {

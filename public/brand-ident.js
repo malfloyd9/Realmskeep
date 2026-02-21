@@ -665,22 +665,34 @@
   // viewBox "0 0 28 34", all face RIGHT by default.
   // Left-side spawns get scaleX:-1 so they face inward.
   var SIEGE_CHARS = [
-    // Swordsman: oval head + body/legs + forward sword line
+    // Swordsman: charging, sword raised overhead
     {
-      fill: 'M14,1C10.7,1 8,3.5 8,6.5C8,9.5 10.7,12 14,12C17.3,12 20,9.5 20,6.5C20,3.5 17.3,1 14,1ZM10.5,12L10.5,22L7,33L12,33L14,26L16,33L21,33L17.5,22L17.5,12Z',
-      stroke: 'M17.5,15L28,9',
+      fill: 'M14,1C11,1 9,3 9,5.5C9,8 11,10 14,10C17,10 19,8 19,5.5C19,3 17,1 14,1ZM11,10L7,10L5,22L4,33L10,33L14,27L18,33L24,33L22,22L21,10Z',
+      stroke: 'M21,13L28,2',
       sw: 2,
     },
-    // Archer: head + body/legs + bow curve + bowstring + arrow
+    // Archer: bow fully drawn, arrow aimed forward
     {
-      fill: 'M14,1C10.7,1 8,3.5 8,6.5C8,9.5 10.7,12 14,12C17.3,12 20,9.5 20,6.5C20,3.5 17.3,1 14,1ZM11,12L11,22L7.5,33L12.5,33L14,26.5L15.5,33L20.5,33L17,22L17,12Z',
-      stroke: 'M21,7Q27,16.5 21,26M21,7L21,26M13.5,16.5L21,16.5',
-      sw: 1.6,
+      fill: 'M14,1C11,1 9,3 9,5.5C9,8 11,10 14,10C17,10 19,8 19,5.5C19,3 17,1 14,1ZM12,10L9,10L8,23L6,33L11,33L14,27L17,33L22,33L20,23L18,10Z',
+      stroke: 'M23,5Q29,17 23,29M23,5L23,29M12,17L23,17',
+      sw: 1.5,
     },
-    // Wizard: pointy hat + wide robes + staff line on left
+    // Wizard: tall pointy hat, wide flowing robes, staff
     {
-      fill: 'M14,0L6,12L22,12ZM12,12L11,22L7.5,33L12.5,33L14,26.5L15.5,33L20.5,33L17,22L16,12Z',
-      stroke: 'M4.5,12L4.5,33',
+      fill: 'M14,0L5,13L23,13ZM8,13L5,34L12,34L14,27L16,34L23,34L20,13Z',
+      stroke: 'M3,13L3,34',
+      sw: 2,
+    },
+    // Dwarf: stout body, oversized helmet-head, axe raised
+    {
+      fill: 'M14,3C9,3 6,6 6,9.5C6,13 9,15.5 14,15.5C19,15.5 22,13 22,9.5C22,6 19,3 14,3ZM11,15L8,15L7,26L11,33L14,29L17,33L21,26L20,15Z',
+      stroke: 'M21,15L28,5',
+      sw: 2,
+    },
+    // Shield Knight: large shield forward, sword raised
+    {
+      fill: 'M14,1C11,1 9,3 9,5.5C9,8 11,10 14,10C17,10 19,8 19,5.5C19,3 17,1 14,1ZM3,9L3,26L10,26L10,9ZM12,10L10,10L10,33L15,33L17,22L17,10Z',
+      stroke: 'M17,12L26,3',
       sw: 2,
     },
   ];
@@ -691,8 +703,8 @@
 
     var svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('viewBox', '0 0 28 34');
-    svg.setAttribute('width', '15');
-    svg.setAttribute('height', '18');
+    svg.setAttribute('width', '22');
+    svg.setAttribute('height', '27');
     svg.style.cssText = 'position:absolute;top:0;left:0;overflow:visible;pointer-events:none;';
 
     var body = document.createElementNS(ns, 'path');
@@ -717,27 +729,46 @@
     if (!siegeRunning || !siegeEl) return;
 
     var header = siegeEl.parentElement;
-    var headerH = header ? header.offsetHeight : 180;
     var vw = window.innerWidth;
     var centerX = vw / 2;
-    // Characters fade out before they reach this radius from center
-    var clearRadius = Math.max(175, vw * 0.17);
+
+    // Ground plane: the bottom of the castle in the logo (y≈410 of 500-unit viewBox = 82%)
+    // Measure dynamically so it's correct on any screen size.
+    var groundY;
+    var logoEl = header ? header.querySelector('#LOGO') : null;
+    if (logoEl && header) {
+      var logoRect = logoEl.getBoundingClientRect();
+      var headerRect = header.getBoundingClientRect();
+      groundY = (logoRect.top - headerRect.top) + logoRect.height * 0.82;
+    } else {
+      groundY = header ? header.offsetHeight * 0.78 : 140;
+    }
+
+    // Responsive clear radius: smaller on mobile so characters march further on-screen
+    var isMobile = vw < 600;
+    var clearRadius = isMobile ? Math.max(60, vw * 0.10) : Math.max(175, vw * 0.17);
+    var stopBuffer = isMobile ? gsap.utils.random(10, 50) : gsap.utils.random(40, 120);
 
     var isLeft = side === 'left';
     var startX = isLeft ? -22 : vw + 22;
     var stopX = isLeft
-      ? centerX - clearRadius - gsap.utils.random(40, 120)
-      : centerX + clearRadius + gsap.utils.random(40, 120);
+      ? centerX - clearRadius - stopBuffer
+      : centerX + clearRadius + stopBuffer;
+
+    // Random scale creates depth: larger = foreground, smaller = background
+    var scale = gsap.utils.random(0.65, 1.45);
 
     var el = createAttackerSVG(Math.floor(Math.random() * SIEGE_CHARS.length));
-    var yPos = headerH * gsap.utils.random(0.12, 0.70);
 
+    // transformOrigin at bottom-center of the 15×18 SVG so scaling anchors to ground
+    // y = groundY - 18 positions the element so its bottom edge is at groundY
     gsap.set(el, {
       x: startX,
-      y: yPos,
-      scaleX: isLeft ? 1 : -1,
+      y: groundY - 27,
+      scaleX: isLeft ? scale : -scale,
+      scaleY: scale,
       opacity: 0,
-      transformOrigin: '7.5px 9px',
+      transformOrigin: '11px 27px',
     });
 
     siegeEl.appendChild(el);
@@ -745,7 +776,7 @@
     var dur = gsap.utils.random(2.2, 3.8);
 
     gsap.to(el, { x: stopX, duration: dur, ease: 'none' });
-    gsap.to(el, { opacity: gsap.utils.random(0.5, 0.78), duration: 0.4, ease: 'power1.in' });
+    gsap.to(el, { opacity: gsap.utils.random(0.28, 0.50), duration: 0.4, ease: 'power1.in' });
     gsap.to(el, {
       opacity: 0,
       duration: dur * 0.38,
@@ -758,28 +789,27 @@
   function siegeLoop() {
     if (!siegeRunning || !siegeEl) return;
 
-    var lN = Math.round(gsap.utils.random(1, 2.9));
-    var rN = Math.round(gsap.utils.random(1, 2.9));
+    var lN = Math.round(gsap.utils.random(0.6, 1.9));
+    var rN = Math.round(gsap.utils.random(0.6, 1.9));
 
     for (var l = 0; l < lN; l++) {
       (function (d) {
         var tw = gsap.delayedCall(d, function () { spawnSiegeAttacker('left'); });
         siegeTweens.push(tw);
-      })(l * gsap.utils.random(0.1, 0.3));
+      })(l * gsap.utils.random(0.2, 0.5));
     }
     for (var r = 0; r < rN; r++) {
       (function (d) {
         var tw = gsap.delayedCall(d, function () { spawnSiegeAttacker('right'); });
         siegeTweens.push(tw);
-      })(r * gsap.utils.random(0.1, 0.3));
+      })(r * gsap.utils.random(0.2, 0.5));
     }
 
-    var next = gsap.delayedCall(gsap.utils.random(0.6, 1.3), siegeLoop);
+    var next = gsap.delayedCall(gsap.utils.random(1.8, 3.2), siegeLoop);
     siegeTweens.push(next);
   }
 
   function startSiege() {
-    if (window.innerWidth <= 768) return;
     if (siegeRunning) return;
 
     var header = document.querySelector('header');

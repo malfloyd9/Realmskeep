@@ -462,13 +462,23 @@ import Layout from '../layouts/Layout.astro';
 
                 /* --- Message segments --- */
                 var segments = [
-                    { text: 'WELCOME TO THE KEEP... ONLINE SHOP COMING SOON! CHECK US OUT ON ', isLink: false },
+                    { text: 'WELCOME TO THE KEEP...', isLink: false },
+                    { br: true },
+                    { text: 'ONLINE SHOP COMING SOON!', isLink: false },
+                    { br: true },
+                    { text: 'CHECK US OUT ON ', isLink: false },
                     { text: 'ETSY', isLink: true, href: 'https://www.etsy.com/shop/RealmsKeep' },
-                    { text: '! SEE YOU AROUND THE REALM!', isLink: false }
+                    { text: '!', isLink: false },
+                    { br: true },
+                    { text: 'SEE YOU AROUND THE REALM!', isLink: false }
                 ];
                 var chars = [];
                 for (var s = 0; s < segments.length; s++) {
                     var seg = segments[s];
+                    if (seg.br) {
+                        chars.push({ isBr: true, isLink: false, href: null });
+                        continue;
+                    }
                     for (var c = 0; c < seg.text.length; c++) {
                         chars.push({ char: seg.text[c], isLink: seg.isLink, href: seg.href || null });
                     }
@@ -548,6 +558,11 @@ import Layout from '../layouts/Layout.astro';
                     (function(idx) {
                         tl.call(function() {
                             var ch = chars[idx];
+                            if (ch.isBr) {
+                                currentHTML += '<br>';
+                                bubbleText.innerHTML = currentHTML;
+                                return;
+                            }
                             if (ch.isLink && !inLink) {
                                 currentHTML += '<a href="' + ch.href + '" target="_blank" rel="noopener" class="shop-etsy-link">';
                                 inLink = true;
