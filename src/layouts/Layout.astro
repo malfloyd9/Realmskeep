@@ -5,10 +5,11 @@ interface Props {
     title: string;
     description?: string;
     canonicalURL?: string;
+    isHome?: boolean;
     children?: any;
 }
 
-const { title, description, canonicalURL, children } = Astro.props;
+const { title, description, canonicalURL, isHome = false, children } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -17,6 +18,8 @@ const { title, description, canonicalURL, children } = Astro.props;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="pinterest" content="nopin">
+    <meta name="color-scheme" content="dark">
+    <style>html{background:#0a0a0a;color:#e5e5e5}</style>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
@@ -29,7 +32,18 @@ const { title, description, canonicalURL, children } = Astro.props;
     <slot name="head" />
 </head>
 <body>
-    <header>
+    <nav class="main-nav" aria-label="Main navigation">
+        <div class="container">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/lore" class="nav-link">Lore</a>
+            <a href="/gallery" class="nav-link">Gallery</a>
+            <a href="/shop" class="nav-link">Shop</a>
+            <a href="/faq" class="nav-link">FAQ</a>
+        </div>
+    </nav>
+
+    {isHome && (
+    <header class="hero-entry">
         <div class="container">
             <div class="logo-section">
                 <div class="logo-container" data-hero-logo-area>
@@ -86,18 +100,53 @@ const { title, description, canonicalURL, children } = Astro.props;
             </div>
         </div>
     </header>
-
-    <nav class="main-nav" aria-label="Main navigation">
-        <div class="container">
-            <a href="/" class="nav-link">Home</a>
-            <a href="/lore" class="nav-link">Lore</a>
-            <a href="/gallery" class="nav-link">Gallery</a>
-            <a href="/shop" class="nav-link">Shop</a>
-            <a href="/faq" class="nav-link">FAQ</a>
-        </div>
-    </nav>
+    )}
 
     <style is:global>
+        /* --- Native cross-document view transitions (Chrome/Edge/Safari) --- */
+        @view-transition {
+            navigation: auto;
+        }
+
+        /* Kill the white flash: paint the VT layer dark */
+        ::view-transition {
+            background-color: #0a0a0a;
+        }
+
+        /* Nav: instant swap — looks frozen since snapshots match */
+        ::view-transition-old(main-nav),
+        ::view-transition-new(main-nav) {
+            animation: none;
+        }
+
+        /* Content: cross-dissolve with additive blending — no white bleed-through */
+        ::view-transition-old(page-content),
+        ::view-transition-new(page-content) {
+            mix-blend-mode: plus-lighter;
+        }
+
+        ::view-transition-old(page-content) {
+            animation: 250ms ease-out both vt-dissolve-out;
+        }
+
+        ::view-transition-new(page-content) {
+            animation: 250ms ease-in both vt-dissolve-in;
+        }
+
+        @keyframes vt-dissolve-out {
+            to { opacity: 0; }
+        }
+
+        @keyframes vt-dissolve-in {
+            from { opacity: 0; }
+        }
+
+        /* Root (header, footer, body bg): instant — no flash */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
+        }
+
         header .container {
             display: flex !important;
             flex-direction: column !important;
@@ -138,11 +187,23 @@ const { title, description, canonicalURL, children } = Astro.props;
             visibility: visible !important;
         }
 
-        /* TEMPORARY: Force logo visibility - brand-ident.js will control animations */
-        /* The script sets #LOGO to opacity: 1 during assembly animation */
-        header .logo-container svg#LOGO {
-            opacity: 1 !important;
-            visibility: visible !important;
+        /* Header entry animation — starts collapsed, expanded by brand-ident.js */
+        header.hero-entry {
+            height: 0;
+            overflow: hidden;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            header.hero-entry {
+                height: auto;
+                overflow: visible;
+                padding-top: 2rem;
+                padding-bottom: 2rem;
+                border-bottom: 4px double var(--black);
+            }
         }
 
         .main-nav {
@@ -150,15 +211,20 @@ const { title, description, canonicalURL, children } = Astro.props;
             border-bottom: 2px solid var(--black);
             padding: 1rem 0;
             width: 100%;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            view-transition-name: main-nav;
         }
 
         .main-nav .container {
-            display: grid !important;
-            grid-template-columns: repeat(5, 1fr) !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            flex-direction: row !important;
+            justify-content: center !important;
             visibility: visible !important;
             opacity: 1 !important;
-            gap: 1rem;
-            justify-items: center;
+            gap: 0.75rem;
             align-items: center;
             width: 100%;
             max-width: 800px;
@@ -182,16 +248,19 @@ const { title, description, canonicalURL, children } = Astro.props;
             border-radius: 4px;
             padding: 0.7rem 1rem !important;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-            display: inline-block !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            min-width: 100px;
-            width: 100%;
-            max-width: 120px;
+            flex: 0 1 auto;
+            min-width: 80px;
             text-align: center;
+            white-space: nowrap;
             visibility: visible !important;
             opacity: 1 !important;
         }
 
+        /* Gold reveal overlay on hover */
         .main-nav .nav-link::before {
             content: '';
             position: absolute;
@@ -206,6 +275,7 @@ const { title, description, canonicalURL, children } = Astro.props;
             z-index: -1;
         }
 
+        /* Hover: dark → gold glow bloom */
         .main-nav .nav-link:hover,
         .main-nav .nav-link:focus {
             color: #d4af37 !important;
@@ -226,7 +296,7 @@ const { title, description, canonicalURL, children } = Astro.props;
             box-shadow: 0 2px 8px rgba(212, 175, 55, 0.5) !important;
         }
 
-        /* Active state - highlight current page */
+        /* Active state - highlight current page with gold */
         .main-nav .nav-link[aria-current="page"],
         .main-nav .nav-link.active {
             color: #d4af37 !important;
@@ -236,54 +306,86 @@ const { title, description, canonicalURL, children } = Astro.props;
             box-shadow: 0 3px 12px rgba(212, 175, 55, 0.5) !important;
         }
 
-        @media (max-width: 768px) {
-            .main-nav .container {
-                grid-template-columns: repeat(5, 1fr) !important;
-                gap: 0.75rem;
-                max-width: 100%;
-                padding: 0 0.5rem;
-            }
-
-            .main-nav .nav-link {
-                font-size: 0.85rem !important;
-                padding: 0.6rem 0.8rem !important;
-                min-width: 70px;
-                max-width: 100px;
-                letter-spacing: 1.5px !important;
-            }
-        }
-
         @media (max-width: 600px) {
             .main-nav .container {
-                grid-template-columns: repeat(5, 1fr) !important;
                 gap: 0.5rem;
                 padding: 0 0.5rem;
             }
 
             .main-nav .nav-link {
-                font-size: 0.75rem !important;
-                padding: 0.55rem 0.7rem !important;
-                min-width: 60px;
-                max-width: 90px;
+                font-size: 0.8rem !important;
+                padding: 0.5rem 0.7rem !important;
+                min-width: 65px;
                 letter-spacing: 1px !important;
             }
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 400px) {
             .main-nav .container {
-                grid-template-columns: 1fr !important;
-                width: 100%;
-                gap: 0.75rem;
-                max-width: 100%;
+                gap: 0.35rem;
+                padding: 0 0.4rem;
             }
 
             .main-nav .nav-link {
-                width: 100%;
-                max-width: 200px;
-                text-align: center;
-                font-size: 0.85rem !important;
-                padding: 0.6rem 1rem !important;
+                font-size: 0.65rem !important;
+                padding: 0.4rem 0.5rem !important;
                 min-width: auto;
+                letter-spacing: 0.03em !important;
+            }
+        }
+
+        /* Prevent horizontal overflow on all pages */
+        html, body {
+            width: 100% !important;
+            overflow-x: hidden !important;
+        }
+
+        main {
+            overflow-x: hidden;
+            max-width: 100%;
+            view-transition-name: page-content;
+        }
+
+        @media (max-width: 480px) {
+            /* Override Floyd's column nav — keep our horizontal wrap */
+            .main-nav .nav-link {
+                width: auto !important;
+                max-width: none !important;
+                font-size: 0.75rem !important;
+                padding: 0.45rem 0.6rem !important;
+                min-width: auto !important;
+                letter-spacing: 0.5px !important;
+            }
+
+            .main-nav .container {
+                gap: 0.4rem;
+            }
+
+            .container {
+                padding: 0 1rem !important;
+            }
+
+            .section-title {
+                font-size: 1.6rem !important;
+                letter-spacing: 1px !important;
+            }
+
+            h1, h2, h3 {
+                overflow-wrap: break-word;
+                word-break: break-word;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem !important;
+                letter-spacing: 1px !important;
+            }
+
+            .hero p {
+                font-size: 1rem !important;
+            }
+
+            .hero {
+                padding: 3rem 1rem !important;
             }
         }
     </style>
@@ -304,7 +406,8 @@ const { title, description, canonicalURL, children } = Astro.props;
     <script is:inline src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script is:inline src="/brand-ident.js"></script>
     <script is:inline src="/main.js"></script>
-    
+    <script is:inline src="/nav-transitions.js"></script>
+
     <slot name="scripts" />
 </body>
 </html>
