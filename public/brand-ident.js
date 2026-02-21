@@ -940,9 +940,7 @@
           borderBottomWidth: 0,
         });
 
-        // Delay matches VT page-content fade-in duration (80ms) so the
-        // header expansion starts only after the VT overlay has cleared.
-        var masterTL = gsap.timeline({ delay: 0.08 });
+        var masterTL = gsap.timeline();
 
         // Phase 1: Header expands to full height
         masterTL.to(header, {
@@ -1002,9 +1000,30 @@
     return;
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
+  // pagereveal fires just before VT animation — wait for it to finish so our
+  // expand doesn't compete with the overlay. 150ms failsafe handles Chrome
+  // hard-refresh (where pagereveal occasionally doesn't fire).
+  function _launchHero() {
+    if (window._heroAnimStarted) return;
+    window._heroAnimStarted = true;
     init();
+  }
+
+  if ('onpagereveal' in window) {
+    var _heroFallback = setTimeout(_launchHero, 150);
+    window.addEventListener('pagereveal', function(e) {
+      clearTimeout(_heroFallback);
+      if (e.viewTransition) {
+        e.viewTransition.finished.then(_launchHero).catch(_launchHero);
+      } else {
+        _launchHero();
+      }
+    }, { once: true });
+  } else {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _launchHero);
+    } else {
+      _launchHero();
+    }
   }
 })();

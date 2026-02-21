@@ -99,10 +99,15 @@ import Layout from '../layouts/Layout.astro';
             background: #1a1a2e;
         }
 
-        /* Collapsed by default so VT snapshot sees height:0, then GSAP expands */
+        /* Collapsed by default so VT snapshot sees true zero — padding must also
+           be zeroed because border-box height:0 + padding:2rem still renders a
+           visible bar. Opacity hides any rounding artifacts. */
         .shop-coming-soon.shop-entry {
-            height: 0;
-            overflow: hidden;
+            height: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            overflow: hidden !important;
+            opacity: 0 !important;
         }
 
         .shop-screen {
@@ -483,21 +488,26 @@ import Layout from '../layouts/Layout.astro';
                    Sequenced so the bubble only appears after the curtain has opened.
                    This removes the "herky jerky" of two competing animations. */
                 var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                // Delay matches VT page-content fade-in duration (80ms) so expansion
-                // starts only after the VT overlay has cleared — no freeze-then-snap.
-                var tl = gsap.timeline({ delay: reducedMotion ? 0 : 0.08 });
+                var tl = gsap.timeline();
 
                 /* 1) Section expands — CSS shop-entry collapsed it, GSAP opens it */
                 if (shopSection && !reducedMotion) {
                     shopSection.classList.remove('shop-entry');
+                    // Measure natural padding BEFORE re-collapsing
+                    var comp = window.getComputedStyle(shopSection);
+                    var targetPT = comp.paddingTop;
+                    var targetPB = comp.paddingBottom;
                     var fullH = shopSection.scrollHeight;
-                    gsap.set(shopSection, { height: 0, overflow: 'hidden' });
+                    // Re-collapse to true zero (padding + height + opacity)
+                    gsap.set(shopSection, { height: 0, paddingTop: 0, paddingBottom: 0, opacity: 1, overflow: 'hidden' });
                     tl.to(shopSection, {
                         height: fullH,
-                        duration: 0.7,
-                        ease: 'power2.out',
+                        paddingTop: targetPT,
+                        paddingBottom: targetPB,
+                        duration: 0.8,
+                        ease: 'power3.out',
                         onComplete: function() {
-                            gsap.set(shopSection, { clearProps: 'height,overflow' });
+                            gsap.set(shopSection, { clearProps: 'all' });
                         }
                     });
                 } else if (shopSection) {
@@ -588,12 +598,31 @@ import Layout from '../layouts/Layout.astro';
                 }
             }
 
-            // DOMContentLoaded fires after GSAP CDN script executes (it's synchronous
-            // at the bottom of <body>), so GSAP is always ready here — no image wait.
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', runShopAnimation);
-            } else {
+            // pagereveal fires just before VT animation — wait for it to finish so
+            // our expand doesn't compete with the overlay. 150ms failsafe handles
+            // Chrome hard-refresh (where pagereveal occasionally doesn't fire).
+            function _initShop() {
+                if (window._shopAnimStarted) return;
+                window._shopAnimStarted = true;
                 runShopAnimation();
+            }
+
+            if ('onpagereveal' in window) {
+                var _shopFallback = setTimeout(_initShop, 150);
+                window.addEventListener('pagereveal', function(e) {
+                    clearTimeout(_shopFallback);
+                    if (e.viewTransition) {
+                        e.viewTransition.finished.then(_initShop).catch(_initShop);
+                    } else {
+                        _initShop();
+                    }
+                }, { once: true });
+            } else {
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', _initShop);
+                } else {
+                    _initShop();
+                }
             }
         })();
     </script>
