@@ -13,10 +13,10 @@ import Layout from '../layouts/Layout.astro';
         <header class="scribe-header" aria-label="Scribe's correction">
             <div class="scribe-line1-wrap" id="scribe-line1-wrap">
                 <span class="scribe-cursive" id="scribe-cursive">
-                    Fletching & Quiver
+                    <span class="scribe-initial">F</span>letching <span class="scribe-initial">A</span>nd <span class="scribe-initial">Q</span>uiver
                     <span class="scribe-strike" id="scribe-strike" aria-hidden="true"></span>
                 </span>
-                <span class="scribe-faq-title" id="scribe-faq-title">Frequently Asked Questions</span>
+                <span class="scribe-faq-title" id="scribe-faq-title"><span class="scribe-initial">F</span>requently <span class="scribe-initial">A</span>sked <span class="scribe-initial">Q</span>uestions</span>
             </div>
         </header>
 
@@ -152,7 +152,7 @@ import Layout from '../layouts/Layout.astro';
             top: 50%;
             transform: translate(-50%, -50%);
             font-family: 'Pinyon Script', cursive;
-            font-size: clamp(2.8rem, 6vw, 4rem);
+            font-size: clamp(3rem, 7vw, 4.5rem);
             font-weight: 400;
             color: #2a1a0a;
             letter-spacing: 0.02em;
@@ -160,6 +160,11 @@ import Layout from '../layouts/Layout.astro';
             -moz-osx-font-smoothing: grayscale;
             opacity: 0;
             white-space: nowrap;
+        }
+
+        .scribe-initial {
+            text-decoration: underline;
+            text-underline-offset: 0.12em;
         }
 
         .faq-item {
@@ -279,7 +284,7 @@ import Layout from '../layouts/Layout.astro';
             }
 
             .scribe-faq-title {
-                font-size: clamp(1.3rem, 4vw, 2rem);
+                font-size: clamp(1.6rem, 5vw, 2.5rem);
                 white-space: normal;
             }
 
