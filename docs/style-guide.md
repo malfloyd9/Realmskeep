@@ -37,25 +37,33 @@ All pages load Cinzel + Lato via Google Fonts in `Layout.astro`. Specialty fonts
 
 | Name | Hex | CSS Variable | Usage |
 |------|-----|-------------|-------|
-| Black | `#0a0a0a` | `--black` | Primary text, dark backgrounds, borders |
-| White | `#ffffff` | `--white` | Light backgrounds (home sections), dark-theme text |
+| Black | `#0a0a0a` | `--black` | Dark backgrounds, borders, home section text |
+| White | `#ffffff` | `--white` | Default body text, light backgrounds (home sections) |
 | Gray | `#f4f4f4` | `--gray` | Alternating home section backgrounds |
-| Gold | `#d4af37` | — | Nav hover/active, accent highlights, active page indicator |
-| Bright Gold | `#f4c542` | — | Testimonial accents, link highlights, nav hover text |
-| Nav Bar Dark | `#2a2a2a` | — | Navigation bar background |
+| Gold (primary) | `#d4af37` | — | Nav hover borders/shadows, active page borders, interactive structural accent |
+| Gold (highlight) | `#f4c542` | — | Section underlines, link text, hover text, testimonial accents, decorative |
+| Nav Bar Gradient | `#2e2e2e → #1a1a1a` | — | Navigation bar background (subtle gradient) |
 | Nav Button BG | `#000000` | — | Navigation button default background |
-| Nav Button Border | `#4a4a4a` | — | Navigation button default border |
+| Nav Button Border | `#4a4a4a` | — | Navigation button default border, FAQ item border |
 | Nav Button Text | `#E5E5E5` | — | Navigation button default text |
 | Deep Blue | `#1a1a2e` | — | Shop page background |
 | FAQ Cream | `#f5efe3` | — | FAQ parchment card background |
 | FAQ Ink | `#2a1a0a` | — | FAQ dark ink text color |
 
-### Background Strategy
+### Gold Accent System
 
-- **`html`**: Always `#0a0a0a` (set via inline `<style>` in `<head>` to prevent white flash)
-- **`body`**: `var(--white)` (provides light base for home page sections)
-- **Dark pages** (Lore, Gallery, FAQ, Shop): Sections set their own dark backgrounds
-- **`::view-transition`**: `#0a0a0a` (dark VT layer backdrop prevents flash during transitions)
+Two golds serve distinct roles:
+- **`#d4af37`** (primary) — structural/interactive: nav borders, box-shadows, active page indicators
+- **`#f4c542`** (highlight) — visual/decorative: section `::after` underlines, link text, hover text color, testimonial accents
+
+RGBA variants follow the same split: `rgba(212, 175, 55, ...)` for structural glow, `rgba(244, 197, 66, ...)` for highlight glow.
+
+### Background & Text Strategy
+
+- **`html` + `body`**: background `#0a0a0a`, text `var(--white)` — dark-first default
+- **Home `.collection-section`**: overrides to `color: var(--black)` (light bg sections need dark text)
+- **All visible sections** have their own explicit backgrounds — nothing relies on body background
+- **`::view-transition`**: `#0a0a0a` (dark VT backdrop matches body, preventing flash during transitions)
 
 ---
 
@@ -222,16 +230,12 @@ The site uses the **native CSS View Transitions API** (cross-document MPA transi
 | Group | Element | Animation |
 |-------|---------|-----------|
 | `main-nav` | `.main-nav` | `animation: none` — instant swap, appears frozen |
-| `page-content` | `main` | 250ms opacity cross-dissolve with `mix-blend-mode: plus-lighter` |
+| `page-content` | `main` | Sequential fade: old out (50ms), new in (50ms, 30ms delay) |
 | `root` | Everything else (header, footer, body) | `animation: none` — instant, no flash |
-
-### Why `mix-blend-mode: plus-lighter`
-
-During a standard cross-fade, at the midpoint both old and new snapshots are at 50% opacity. This lets the white `body` background bleed through. `plus-lighter` adds the opacities together (50% + 50% = 100%), preventing any see-through.
 
 ### Why `::view-transition { background-color: #0a0a0a }`
 
-The `::view-transition` pseudo-element is the backdrop behind all transition snapshot layers. Without an explicit dark background, it defaults to transparent, which can flash white during transitions.
+The `::view-transition` pseudo-element is the backdrop behind all transition snapshot layers. Set to `#0a0a0a` to match the dark body background. Combined with the dark body, this ensures zero white flash at any point during navigation.
 
 ### Page-Specific Transitions
 
@@ -246,26 +250,27 @@ The `::view-transition` pseudo-element is the backdrop behind all transition sna
 ```
 Home -> Other:
   1. setupNavExit: logo fades (0.35s) + header collapses (0.5s, overlaps)
-  2. window.location.href navigates
-  3. View transition dissolves content (250ms)
+  2. Main fades to opacity 0 (0.15s) + body set dark + footer hidden
+  3. window.location.href navigates
+  4. View transition fades content (50ms out, 50ms in)
 
 Other -> Home:
-  1. View transition dissolves content (250ms)
+  1. View transition fades content (50ms out, 50ms in)
   2. brand-ident.js: header expands from 0 height
   3. Logo assembly plays
 
 Shop -> Other:
-  1. Shop collapse: locks height, tweens to 0 (0.5s)
+  1. Shop collapse: height/padding to 0 + opacity to 0 (0.4s)
   2. window.location.href navigates
-  3. View transition dissolves content (250ms)
+  3. View transition fades content (50ms out, 50ms in)
 
 Other -> Shop:
-  1. View transition dissolves content (250ms)
+  1. View transition fades content (50ms out, 50ms in)
   2. Shop expand: measures scrollHeight, tweens from 0 (0.7s)
   3. Speech bubble rise-up + typewriter plays
 
 Lore/Gallery/FAQ <-> each other:
-  1. View transition dissolves content (250ms)
+  1. View transition fades content (50ms out, 50ms in)
   2. No additional GSAP animations
 ```
 
@@ -289,7 +294,7 @@ Lore/Gallery/FAQ <-> each other:
 | Shop expand/collapse | Shop page entry/exit | GSAP height tween | `src/pages/shop.astro` |
 | Shop typewriter | Character-by-character text reveal | GSAP timeline callbacks | `src/pages/shop.astro` |
 | Shop sparkles | 22 scattered floating sparkles | CSS `@keyframes` (float, twinkle) | `src/pages/shop.astro` |
-| FAQ scribe | "Fletching & Quiver" strikethrough then "FAQ" | GSAP timeline | `src/pages/faq.astro` |
+| FAQ scribe | "Fletching & Quiver" strikethrough then "FAQ" (loops infinitely) | GSAP timeline (`repeat: -1`) | `src/pages/faq.astro` |
 | FAQ accordion | Expand/collapse answers | GSAP height tween | `src/pages/faq.astro` |
 | Testimonial marquee | Infinite scroll carousel | CSS `@keyframes marquee`, 120s | `src/pages/index.astro` |
 | Active nav highlight | Sets `aria-current="page"` | Vanilla JS | `public/nav-transitions.js` |
@@ -368,6 +373,5 @@ astro.config.mjs         # Dev server port 4322
 - **Don't use `font-weight: 700` on nav links** — design uses 500 for a lighter feel
 - **Don't make nav buttons gold by default** — they start dark (#000 bg, #E5E5E5 text, #4a4a4a border) and reveal gold only on hover/active
 - **Don't use `flex-direction: column` on nav at 480px** — keep horizontal wrap for compact 3+2 layout
-- **Don't add `translateY` transforms to view transitions** — causes compound visual artifacts; use opacity-only dissolves
-- **Don't use standard cross-fade on VT content** — always pair with `mix-blend-mode: plus-lighter` to prevent white bleed-through
-- **Don't change `body` background to dark** — home page sections inherit the white body background intentionally
+- **Don't add `translateY` transforms to view transitions** — causes compound visual artifacts; use opacity-only fades
+- **Don't make body background light** — body is `var(--black)` (#0a0a0a); all visible sections have their own explicit backgrounds. A light body causes white flash during view transitions.

@@ -891,6 +891,16 @@
           duration: 0.5,
           ease: 'power2.inOut',
         }, '-=0.15');
+
+        // Fade entire page to dark before navigation —
+        // so the VT old-page snapshot is already dark, no white flash
+        exitTL.to('main', {
+          opacity: 0,
+          duration: 0.15,
+          ease: 'power2.in',
+        }, '-=0.2');
+        exitTL.set('body', { backgroundColor: '#0a0a0a' });
+        exitTL.set('footer', { opacity: 0 });
       });
     });
   }

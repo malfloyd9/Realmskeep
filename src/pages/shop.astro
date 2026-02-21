@@ -352,15 +352,68 @@ import Layout from '../layouts/Layout.astro';
             100% { opacity: 0; transform: scale(0.3) translate(0, 0) rotate(80deg); }
         }
 
+        /* Tablet — bubble starts getting squeezed, widen + shrink text */
+        @media (max-width: 768px) {
+            .shop-text-bubble {
+                font-size: clamp(0.4rem, 1.4vw, 0.6rem);
+                top: 8%;
+                left: 20%;
+                right: 20%;
+                padding: 0.8rem 1rem;
+                min-height: 5em;
+            }
+        }
+
+        /* Small tablet / large phone */
+        @media (max-width: 600px) {
+            .shop-text-bubble {
+                font-size: clamp(0.35rem, 1.3vw, 0.5rem);
+                top: 5%;
+                left: 14%;
+                right: 14%;
+                padding: 0.6rem 0.8rem;
+                min-height: 4.5em;
+                line-height: 1.8;
+            }
+        }
+
         @media (max-width: 480px) {
             .shop-text-bubble {
-                font-size: clamp(0.35rem, 1.5vw, 0.45rem);
-                top: 12%;
-                left: 18%;
-                right: 18%;
-                padding: 0.6rem 0.7rem;
+                font-size: clamp(0.3rem, 1.2vw, 0.42rem);
+                top: 3%;
+                left: 10%;
+                right: 10%;
+                padding: 0.5rem 0.6rem;
                 border-radius: 12px;
-                min-height: 6em;
+                min-height: 4em;
+                line-height: 1.7;
+                border-width: 3px;
+            }
+            .shop-bubble-tail {
+                bottom: -14px;
+                border-left: 10px solid transparent;
+                border-right: 10px solid transparent;
+                border-top: 14px solid #0a0a0a;
+            }
+            .shop-bubble-tail::after {
+                top: -17px;
+                left: -7px;
+                border-left: 7px solid transparent;
+                border-right: 7px solid transparent;
+                border-top: 11px solid #fff;
+            }
+        }
+
+        /* Very small phones */
+        @media (max-width: 360px) {
+            .shop-text-bubble {
+                font-size: 0.28rem;
+                top: 2%;
+                left: 6%;
+                right: 6%;
+                padding: 0.4rem 0.5rem;
+                min-height: 3.5em;
+                line-height: 1.6;
             }
         }
     </style>
@@ -510,8 +563,11 @@ import Layout from '../layouts/Layout.astro';
                             gsap.set(shopSection, { height: currentH, overflow: 'hidden' });
                             gsap.to(shopSection, {
                                 height: 0,
-                                duration: 0.5,
-                                ease: 'power2.inOut',
+                                paddingTop: 0,
+                                paddingBottom: 0,
+                                opacity: 0,
+                                duration: 0.4,
+                                ease: 'power2.in',
                                 onComplete: function() {
                                     window.location.href = href;
                                 }

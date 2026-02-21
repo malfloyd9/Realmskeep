@@ -19,7 +19,7 @@ const { title, description, canonicalURL, isHome = false, children } = Astro.pro
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="pinterest" content="nopin">
     <meta name="color-scheme" content="dark">
-    <style>html{background:#0a0a0a;color:#e5e5e5}</style>
+    <style>html,body{background:#0a0a0a;color:#e5e5e5}</style>
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
@@ -119,32 +119,25 @@ const { title, description, canonicalURL, isHome = false, children } = Astro.pro
             animation: none;
         }
 
-        /* Content: cross-dissolve with additive blending — no white bleed-through */
-        ::view-transition-old(page-content),
-        ::view-transition-new(page-content) {
-            mix-blend-mode: plus-lighter;
-        }
-
-        ::view-transition-old(page-content) {
-            animation: 250ms ease-out both vt-dissolve-out;
-        }
-
-        ::view-transition-new(page-content) {
-            animation: 250ms ease-in both vt-dissolve-in;
-        }
-
-        @keyframes vt-dissolve-out {
-            to { opacity: 0; }
-        }
-
-        @keyframes vt-dissolve-in {
-            from { opacity: 0; }
-        }
-
-        /* Root (header, footer, body bg): instant — no flash */
+        /* Root (body bg, header, footer): INSTANT — never shows white body */
         ::view-transition-old(root),
         ::view-transition-new(root) {
             animation: none;
+        }
+
+        /* Content: ultra-fast fade (80ms total, barely perceptible) */
+        ::view-transition-old(page-content) {
+            animation: 50ms linear both vt-fade-out;
+        }
+        ::view-transition-new(page-content) {
+            animation: 50ms linear 30ms both vt-fade-in;
+        }
+
+        @keyframes vt-fade-out {
+            to { opacity: 0; }
+        }
+        @keyframes vt-fade-in {
+            from { opacity: 0; }
         }
 
         header .container {
@@ -169,19 +162,19 @@ const { title, description, canonicalURL, isHome = false, children } = Astro.pro
             display: flex;
             justify-content: center;
             width: 100%;
-            max-width: 500px;
+            max-width: 300px;
         }
 
         header .logo-container a {
             display: inline-block;
             margin: 0 auto;
             width: 100%;
-            max-width: 500px;
+            max-width: 300px;
         }
 
         header .logo-container svg {
             width: 100%;
-            max-width: 500px;
+            max-width: 300px;
             height: auto;
             display: block;
             visibility: visible !important;
@@ -207,7 +200,7 @@ const { title, description, canonicalURL, isHome = false, children } = Astro.pro
         }
 
         .main-nav {
-            background: #2a2a2a;
+            background: linear-gradient(180deg, #2e2e2e 0%, #1a1a1a 100%);
             border-bottom: 2px solid var(--black);
             padding: 1rem 0;
             width: 100%;
@@ -347,7 +340,7 @@ const { title, description, canonicalURL, isHome = false, children } = Astro.pro
         }
 
         @media (max-width: 480px) {
-            /* Override Floyd's column nav — keep our horizontal wrap */
+            /* Override column nav default — keep horizontal wrap */
             .main-nav .nav-link {
                 width: auto !important;
                 max-width: none !important;
