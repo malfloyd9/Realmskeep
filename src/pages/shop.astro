@@ -483,7 +483,9 @@ import Layout from '../layouts/Layout.astro';
                    Sequenced so the bubble only appears after the curtain has opened.
                    This removes the "herky jerky" of two competing animations. */
                 var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                var tl = gsap.timeline();
+                // Delay matches VT page-content fade-in duration (80ms) so expansion
+                // starts only after the VT overlay has cleared — no freeze-then-snap.
+                var tl = gsap.timeline({ delay: reducedMotion ? 0 : 0.08 });
 
                 /* 1) Section expands — CSS shop-entry collapsed it, GSAP opens it */
                 if (shopSection && !reducedMotion) {
@@ -586,28 +588,12 @@ import Layout from '../layouts/Layout.astro';
                 }
             }
 
-            // VT-aware startup: wait for the cross-document view transition to finish
-            // before expanding the shop section. Without this, GSAP expands while the
-            // VT overlay shows a static screenshot, causing a janky freeze then snap.
-            var _shopInited = false;
-            function _shopRun() {
-                if (!_shopInited) { _shopInited = true; runShopAnimation(); }
-            }
-
-            if ('onpagereveal' in window) {
-                window.addEventListener('pagereveal', function(e) {
-                    if (e.viewTransition) {
-                        e.viewTransition.finished.then(_shopRun).catch(_shopRun);
-                    } else {
-                        _shopRun();
-                    }
-                }, { once: true });
+            // DOMContentLoaded fires after GSAP CDN script executes (it's synchronous
+            // at the bottom of <body>), so GSAP is always ready here — no image wait.
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', runShopAnimation);
             } else {
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', _shopRun);
-                } else {
-                    _shopRun();
-                }
+                runShopAnimation();
             }
         })();
     </script>

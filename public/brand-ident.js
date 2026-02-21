@@ -940,7 +940,9 @@
           borderBottomWidth: 0,
         });
 
-        var masterTL = gsap.timeline();
+        // Delay matches VT page-content fade-in duration (80ms) so the
+        // header expansion starts only after the VT overlay has cleared.
+        var masterTL = gsap.timeline({ delay: 0.08 });
 
         // Phase 1: Header expands to full height
         masterTL.to(header, {
@@ -1000,27 +1002,9 @@
     return;
   }
 
-  // VT-aware startup: wait for the cross-document view transition to finish
-  // before running expand animations. Without this, GSAP expands the header
-  // while the VT overlay shows a static screenshot, causing a janky snap.
-  var _biInited = false;
-  function _biRun() {
-    if (!_biInited) { _biInited = true; init(); }
-  }
-
-  if ('onpagereveal' in window) {
-    window.addEventListener('pagereveal', function(e) {
-      if (e.viewTransition) {
-        e.viewTransition.finished.then(_biRun).catch(_biRun);
-      } else {
-        _biRun();
-      }
-    }, { once: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', _biRun);
-    } else {
-      _biRun();
-    }
+    init();
   }
 })();
