@@ -65,7 +65,7 @@ h1, h2, h3, .brand {
 
 /* Old header styles - now handled by .masthead in Layout.astro */
 header {
-    /* Styles moved to .masthead in Layout.astro for fixed positioning */
+    background: var(--white);
 }
 
 header .container {

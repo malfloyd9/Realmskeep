@@ -12,7 +12,7 @@ import Layout from '../layouts/Layout.astro';
         <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     </Fragment>
 
-    <section class="shop-coming-soon" aria-label="Shop coming soon">
+    <section class="shop-coming-soon shop-entry" aria-label="Shop coming soon">
         <div class="shop-screen">
             <button
                 type="button"
@@ -97,6 +97,12 @@ import Layout from '../layouts/Layout.astro';
             justify-content: center;
             padding: 2rem 1rem;
             background: #1a1a2e;
+        }
+
+        /* Collapsed by default so VT snapshot sees height:0, then GSAP expands */
+        .shop-coming-soon.shop-entry {
+            height: 0;
+            overflow: hidden;
         }
 
         .shop-screen {
@@ -432,20 +438,26 @@ import Layout from '../layouts/Layout.astro';
                 var muteBtn = document.getElementById('shop-mute');
                 if (!bg || !bubbleText || !arrow) return;
 
-                /* --- Section expand animation (like home header) --- */
+                /* --- Section expand animation (mirrors hero-entry on home page) ---
+                   Remove the CSS shop-entry class to measure natural height, then
+                   re-collapse via GSAP inline style so GSAP owns the transition.
+                   On complete, clearProps hands control back to CSS (no restriction). */
                 var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                if (shopSection && !reducedMotion) {
-                    var fullH = shopSection.scrollHeight;
-                    gsap.set(shopSection, { height: 0, overflow: 'hidden' });
-                    gsap.to(shopSection, {
-                        height: fullH,
-                        duration: 0.7,
-                        ease: 'power2.out',
-                        delay: 0.1,
-                        onComplete: function() {
-                            gsap.set(shopSection, { clearProps: 'height,overflow' });
-                        }
-                    });
+                if (shopSection) {
+                    shopSection.classList.remove('shop-entry');
+                    if (!reducedMotion) {
+                        var fullH = shopSection.scrollHeight;
+                        gsap.set(shopSection, { height: 0, overflow: 'hidden' });
+                        gsap.to(shopSection, {
+                            height: fullH,
+                            duration: 0.7,
+                            ease: 'power2.out',
+                            delay: 0.1,
+                            onComplete: function() {
+                                gsap.set(shopSection, { clearProps: 'height,overflow' });
+                            }
+                        });
+                    }
                 }
 
                 /* --- Mute toggle --- */
