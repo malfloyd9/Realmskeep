@@ -438,28 +438,6 @@ import Layout from '../layouts/Layout.astro';
                 var muteBtn = document.getElementById('shop-mute');
                 if (!bg || !bubbleText || !arrow) return;
 
-                /* --- Section expand animation (mirrors hero-entry on home page) ---
-                   Remove the CSS shop-entry class to measure natural height, then
-                   re-collapse via GSAP inline style so GSAP owns the transition.
-                   On complete, clearProps hands control back to CSS (no restriction). */
-                var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-                if (shopSection) {
-                    shopSection.classList.remove('shop-entry');
-                    if (!reducedMotion) {
-                        var fullH = shopSection.scrollHeight;
-                        gsap.set(shopSection, { height: 0, overflow: 'hidden' });
-                        gsap.to(shopSection, {
-                            height: fullH,
-                            duration: 0.7,
-                            ease: 'power2.out',
-                            delay: 0.1,
-                            onComplete: function() {
-                                gsap.set(shopSection, { clearProps: 'height,overflow' });
-                            }
-                        });
-                    }
-                }
-
                 /* --- Mute toggle --- */
                 var bleepAudio = null;
                 var shopMuted = false;
@@ -491,9 +469,7 @@ import Layout from '../layouts/Layout.astro';
                     }
                 }
 
-                /* --- Bubble rise-up animation ---
-                   Starts invisible below final position (at shopkeeper's head),
-                   rises slowly to its resting spot, THEN typing begins. */
+                /* --- Pre-set bubble off-screen (hidden until section is open) --- */
                 if (bubble) {
                     gsap.set(bubble, {
                         opacity: 0,
@@ -503,9 +479,30 @@ import Layout from '../layouts/Layout.astro';
                     });
                 }
 
+                /* --- Master timeline: expand section FIRST, then bubble rises ---
+                   Sequenced so the bubble only appears after the curtain has opened.
+                   This removes the "herky jerky" of two competing animations. */
+                var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
                 var tl = gsap.timeline();
 
-                /* 1) Bubble rises up from the shopkeeper's head — slow and smooth */
+                /* 1) Section expands — CSS shop-entry collapsed it, GSAP opens it */
+                if (shopSection && !reducedMotion) {
+                    shopSection.classList.remove('shop-entry');
+                    var fullH = shopSection.scrollHeight;
+                    gsap.set(shopSection, { height: 0, overflow: 'hidden' });
+                    tl.to(shopSection, {
+                        height: fullH,
+                        duration: 0.7,
+                        ease: 'power2.out',
+                        onComplete: function() {
+                            gsap.set(shopSection, { clearProps: 'height,overflow' });
+                        }
+                    });
+                } else if (shopSection) {
+                    shopSection.classList.remove('shop-entry');
+                }
+
+                /* 2) Bubble rises up from the shopkeeper's head — after section is open */
                 if (bubble) {
                     tl.to(bubble, {
                         opacity: 1,
@@ -516,7 +513,7 @@ import Layout from '../layouts/Layout.astro';
                     });
                 }
 
-                /* 2) Brief pause, then start typing */
+                /* 3) Brief pause, then start typing */
                 var typeStart = tl.duration() + 0.3;
                 tl.call(function() {
                     if (gemini) gemini.classList.add('is-active');
@@ -589,10 +586,12 @@ import Layout from '../layouts/Layout.astro';
                 }
             }
 
-            if (document.readyState === 'complete') {
-                runShopAnimation();
+            // DOMContentLoaded fires after GSAP CDN script executes (it's synchronous
+            // at the bottom of <body>), so GSAP is always ready here — no image wait.
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', runShopAnimation);
             } else {
-                window.addEventListener('load', runShopAnimation);
+                runShopAnimation();
             }
         })();
     </script>
