@@ -1000,9 +1000,27 @@
     return;
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
+  // VT-aware startup: wait for the cross-document view transition to finish
+  // before running expand animations. Without this, GSAP expands the header
+  // while the VT overlay shows a static screenshot, causing a janky snap.
+  var _biInited = false;
+  function _biRun() {
+    if (!_biInited) { _biInited = true; init(); }
+  }
+
+  if ('onpagereveal' in window) {
+    window.addEventListener('pagereveal', function(e) {
+      if (e.viewTransition) {
+        e.viewTransition.finished.then(_biRun).catch(_biRun);
+      } else {
+        _biRun();
+      }
+    }, { once: true });
   } else {
-    init();
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', _biRun);
+    } else {
+      _biRun();
+    }
   }
 })();

@@ -586,12 +586,28 @@ import Layout from '../layouts/Layout.astro';
                 }
             }
 
-            // DOMContentLoaded fires after GSAP CDN script executes (it's synchronous
-            // at the bottom of <body>), so GSAP is always ready here — no image wait.
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', runShopAnimation);
+            // VT-aware startup: wait for the cross-document view transition to finish
+            // before expanding the shop section. Without this, GSAP expands while the
+            // VT overlay shows a static screenshot, causing a janky freeze then snap.
+            var _shopInited = false;
+            function _shopRun() {
+                if (!_shopInited) { _shopInited = true; runShopAnimation(); }
+            }
+
+            if ('onpagereveal' in window) {
+                window.addEventListener('pagereveal', function(e) {
+                    if (e.viewTransition) {
+                        e.viewTransition.finished.then(_shopRun).catch(_shopRun);
+                    } else {
+                        _shopRun();
+                    }
+                }, { once: true });
             } else {
-                runShopAnimation();
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', _shopRun);
+                } else {
+                    _shopRun();
+                }
             }
         })();
     </script>
